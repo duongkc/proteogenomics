@@ -1,0 +1,34 @@
+Model information: GeneMarkS_default_gcode_1_GC<=70
+
+FASTA definition line: TRINITY_DN96_c0_g1_i1 len=1105 path=[0:0-1104]
+Predicted genes
+   Gene    Strand    LeftEnd    RightEnd       Gene     Class
+    #                                         Length
+   15        -         540        1040          501        1
+
+Model information: GeneMarkS_default_gcode_1_GC<=44
+
+Model information: GeneMarkS_default_gcode_1_GC<=54
+
+FASTA definition line: TRINITY_DN28096_c0_g1_i1 len=418 path=[0:0-417]
+Predicted genes
+   Gene    Strand    LeftEnd    RightEnd       Gene     Class
+    #                                         Length
+
+Model information: GeneMarkS_default_gcode_1_GC<=54
+
+FASTA definition line: TRINITY_DN28020_c0_g1_i1 len=449 path=[0:0-448]
+Predicted genes
+   Gene    Strand    LeftEnd    RightEnd       Gene     Class
+    #                                         Length
+19225        -          23        >448          426        1
+
+Model information: GeneMarkS_default_gcode_1_GC<=44
+
+FASTA definition line: TRINITY_DN4008_c0_g1_i1 len=687 path=[0:0-686]
+Predicted genes
+   Gene    Strand    LeftEnd    RightEnd       Gene     Class
+    #                                         Length
+ 5527        +         117         563          447        1
+
+Model information: GeneMarkS_default_gcode_1_GC<=44
