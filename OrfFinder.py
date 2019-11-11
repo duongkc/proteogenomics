@@ -3,6 +3,7 @@ import sys
 import re
 import os
 import getopt
+import datetime
 
 """
 short python script to extract ORFs found with GeneMarkS-T from the RNA transcripts assembled by Trinity.
@@ -106,8 +107,10 @@ def main(argv):
         else:
             print("usage: OrfFinder.py -g <genemarkfile> -t <transcriptfile>")
             sys.exit(2)
+    print(datetime.datetime.now())
     parse_genemark(genemark_file, transcript_file)
     print("done")
+    print(datetime.datetime.now())
 
 
 if __name__ == '__main__':
