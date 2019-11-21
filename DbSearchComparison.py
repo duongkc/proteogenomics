@@ -13,7 +13,12 @@ def extract_peptide_column():
 
 def parse_genemark_search():
     """Parses the genemark file to extract the peptide column and matching ORF"""
-
+    gmfile = "data/genemark_dbsearch_psm.csv"  # Change to non static later
+    with open(gmfile, "r") as f:
+        next(f)
+        for line in f:
+            columns = line.split(",")
+            print(columns[0])
 
 
 def parse_transdecoder_search():
