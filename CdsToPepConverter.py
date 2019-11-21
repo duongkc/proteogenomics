@@ -41,7 +41,7 @@ def insert_newlines(seq, every=60):
 
 def parse_cds_fasta(file):
     """"""
-    with open("Trinity.fasta.genemark.pep", "w+") as new_file:
+    with open("output/Trinity.fasta.genemark.pep", "w+") as new_file:
 
         with open(file, "r") as f:
             sequence = ""
@@ -64,6 +64,6 @@ def parse_cds_fasta(file):
 
 
 print(datetime.datetime.now())
-parse_cds_fasta("Trinity.fasta.genemark.cds")
+parse_cds_fasta("output/Trinity.fasta.genemark.cds")
 print("done")
 print(datetime.datetime.now())

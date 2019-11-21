@@ -54,7 +54,7 @@ def reverse_complement(sequence):
 
 def write_ORFs(gene_id, sequence, start, stop, strand):
     """Writes ORFs to new file in current directory"""
-    with open("Trinity.fasta.genemark.cds", "a+") as new_file:
+    with open("output/Trinity.fasta.genemark.cds", "a+") as new_file:
         new_file.write(">" + gene_id + ":" + str(start+1) + "-" + str(stop) + "(" + strand + ")\n")
         new_file.write(sequence + "\n")
 
@@ -90,8 +90,8 @@ def parse_genemark(gm_file, trans_file):
 
 
 def main(argv):
-    if os.path.exists("Trinity.fasta.genemark.cds"):
-        os.remove("Trinity.fasta.genemark.cds")
+    if os.path.exists("output/Trinity.fasta.genemark.cds"):
+        os.remove("output/Trinity.fasta.genemark.cds")
     genemark_file = ''
     transcript_file = ''
     try:
