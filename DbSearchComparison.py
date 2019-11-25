@@ -18,7 +18,7 @@ def strip_peptide_col(peptide_column):
 
 
 def parse_genemark_search():
-    """Parses the genemark file to extract the peptide column and matching ORF accession"""
+    """Parses the genemark file to extract the peptides and matching ORF accessions"""
     gmfile = "data/propep_g.csv"  # Change to non static later
     with open(gmfile, "r") as f:
         next(f)
