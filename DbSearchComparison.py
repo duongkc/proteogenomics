@@ -40,11 +40,22 @@ def parse_csv(input_file, db_type):
                 temp_file.write(peptide + "\n")
 
 
+def find_distinct_transdecoder_peptides(temp_output, other_peptides):
+    """Filters the CSV files so only distinct peptides remain"""
+    with open(temp_output, "r") as queries, open(other_peptides, "r") as peptide_list:
+        next(queries)
+        all_peptides = peptide_list.read()
+        for line in queries:
+            query = line.split(",")[1].strip()
+            # print(query)
+            if query not in all_peptides:
+                print(line)
 
 
-parse_csv("data/propep_g.csv", "genemark")
-parse_csv("data/propep_t.csv", "transdecoder")
 
+# parse_csv("data/propep_g.csv", "genemark")
+# parse_csv("data/propep_t.csv", "transdecoder")
+find_distinct_transdecoder_peptides("output/temp_td_output.csv", "output/temp_gm_just_peps.csv")
 
 def main():
     print("Hello, World!")
