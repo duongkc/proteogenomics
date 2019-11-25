@@ -40,8 +40,6 @@ def parse_csv(input_file, db_type):
                 temp_file.write(peptide + "\n")
 
 
-def parse_transdecoder_search():
-    """Parses the transdecoder file to extract the peptide column and matching ORFs"""
 
 
 parse_csv("data/propep_g.csv", "genemark")
