@@ -16,10 +16,17 @@ def strip_peptide_col(peptide_column):
     return stripped_pep
 
 
-def parse_csv(input_file, output_file):
+def parse_csv(input_file, db_type):
     """Parses the PEAKS protein-peptide csv file to extract the peptides and matching ORF accessions"""
     # And write them to a new temporary file, (should be split into sub methods tbh
-    with open(output_file, "w+") as new_file:
+    if db_type == "genemark":
+        temp_output = "output/temp_gm_output.csv"
+        temp_just_peptides = "output/temp_gm_just_peps.csv"
+    else:
+        temp_output = "output/temp_td_output.csv"
+        temp_just_peptides = "output/temp_td_just_peps.csv"
+
+    with open(temp_output, "w+") as new_file, open(temp_just_peptides, "w+") as temp_file:
         new_file.write("Protein Accession, Peptide\n")
         with open(input_file, "r") as f:
             next(f)
@@ -30,14 +37,15 @@ def parse_csv(input_file, output_file):
                 peptide = strip_peptide_col(peptide_col)
                 new_line = accession + "," + peptide + "\n"
                 new_file.write(new_line)
+                temp_file.write(peptide + "\n")
 
 
 def parse_transdecoder_search():
     """Parses the transdecoder file to extract the peptide column and matching ORFs"""
 
 
-parse_csv("data/propep_g.csv", "output/temp_gm_peps.csv")
-parse_csv("data/propep_t.csv", "output/temp_td_peps.csv")
+parse_csv("data/propep_g.csv", "genemark")
+parse_csv("data/propep_t.csv", "transdecoder")
 
 
 def main():
