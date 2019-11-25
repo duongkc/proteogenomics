@@ -16,25 +16,28 @@ def strip_peptide_col(peptide_column):
     return stripped_pep
 
 
-
-def parse_genemark_search():
-    """Parses the genemark file to extract the peptides and matching ORF accessions"""
-    gmfile = "data/propep_g.csv"  # Change to non static later
-    with open(gmfile, "r") as f:
-        next(f)
-        for line in f:
-            columns = line.split(",")
-            accession = columns[2]
-            peptide_col = columns[3]
-            peptide = strip_peptide_col(peptide_col)
-            print(peptide)
+def parse_csv(input_file, output_file):
+    """Parses the PEAKS protein-peptide csv file to extract the peptides and matching ORF accessions"""
+    # And write them to a new temporary file, (should be split into sub methods tbh
+    with open(output_file, "w+") as new_file:
+        new_file.write("Protein Accession, Peptide\n")
+        with open(input_file, "r") as f:
+            next(f)
+            for line in f:
+                columns = line.split(",")
+                accession = columns[2]
+                peptide_col = columns[3]
+                peptide = strip_peptide_col(peptide_col)
+                new_line = accession + "," + peptide + "\n"
+                new_file.write(new_line)
 
 
 def parse_transdecoder_search():
     """Parses the transdecoder file to extract the peptide column and matching ORFs"""
 
 
-parse_genemark_search()
+parse_csv("data/propep_g.csv", "output/temp_gm_peps.csv")
+parse_csv("data/propep_t.csv", "output/temp_td_peps.csv")
 
 
 def main():
