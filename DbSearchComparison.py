@@ -9,8 +9,8 @@ Short script to compare the PEAKS psm search output to find overlap and distinct
 """
 
 
-def strip_peptide_col(peptide_column):
-    """strips peptide column by removing unnecessary information and returns the peptide"""
+def clean_peptide_col(peptide_column):
+    """Cleans up the peptide column by removing unnecessary information and returns the peptide"""
     sample_line = "K.ELC(+57.02)EQ(+.98)EC(+57.02)EWEEITITGSDGSTR.V"
     no_parentheses_pep = re.sub(r'\([^()]*\)', '', peptide_column)
     stripped_pep = no_parentheses_pep.replace('.', '')
@@ -33,7 +33,7 @@ def parse_csv(input_file, db_type):
                 columns = line.split(",")
                 accession = columns[2]
                 peptide_col = columns[3]
-                peptide = strip_peptide_col(peptide_col)
+                peptide = clean_peptide_col(peptide_col)
                 new_line = accession + "," + peptide + "\n"
                 temp_peptide_output.write(new_line)
 
