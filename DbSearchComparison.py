@@ -22,10 +22,8 @@ def parse_csv(input_file, db_type):
     # And write them to a new temporary file, (should be split into sub methods tbh
     if db_type == "genemark":
         temp_output = "output/temp_gm_output.csv"
-        temp_just_peptides = "output/temp_gm_just_peps.csv"
     else:
         temp_output = "output/temp_td_output.csv"
-        temp_just_peptides = "output/temp_td_just_peps.csv"
 
     with open(temp_output, "w+") as temp_peptide_output:
         temp_peptide_output.write("Protein Accession,Peptide\n")
