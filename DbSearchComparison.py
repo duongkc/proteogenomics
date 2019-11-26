@@ -1,7 +1,8 @@
 #!/usr/bin/python3.6
 import sys
-import re
 import datetime
+import re
+import pandas
 
 """
 Short script to compare the PEAKS psm search output to find overlap and distinction between the matched peptides.
@@ -27,7 +28,7 @@ def parse_csv(input_file, db_type):
         temp_just_peptides = "output/temp_td_just_peps.csv"
 
     with open(temp_output, "w+") as new_file, open(temp_just_peptides, "w+") as temp_file:
-        new_file.write("Protein Accession, Peptide\n")
+        new_file.write("Protein Accession,Peptide\n")
         with open(input_file, "r") as f:
             next(f)
             for line in f:
@@ -40,22 +41,27 @@ def parse_csv(input_file, db_type):
                 temp_file.write(peptide + "\n")
 
 
-def find_distinct_transdecoder_peptides(temp_output, other_peptides):
+def find_distinct_peptides(transdecoder_file, genemark_file):
     """Filters the CSV files so only distinct peptides remain"""
-    with open(temp_output, "r") as queries, open(other_peptides, "r") as peptide_list:
-        next(queries)
-        all_peptides = peptide_list.read()
-        for line in queries:
-            query = line.split(",")[1].strip()
-            # print(query)
-            if query not in all_peptides:
-                print(line)
+    with open("output/distinct_td.csv", "w+") as distinct_transdecoder, \
+            open("output/distinct_gm.csv", "w+") as distinct_genemark:
+        transdecoder_data = pandas.read_csv(transdecoder_file, header='infer').drop_duplicates()
+        genemark_data = pandas.read_csv(genemark_file, header='infer').drop_duplicates()
+        td_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='left', indicator=True)\
+            .query("_merge == 'left_only'")
+        gm_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='right', indicator=True)\
+            .query("_merge == 'right_only'")
+        td_merged[['Protein Accession_x', 'Peptide']]\
+            .to_csv(distinct_transdecoder, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'])
+        gm_merged[['Protein Accession_y', 'Peptide']]\
+            .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'])
 
 
 
-# parse_csv("data/propep_g.csv", "genemark")
-# parse_csv("data/propep_t.csv", "transdecoder")
-find_distinct_transdecoder_peptides("output/temp_td_output.csv", "output/temp_gm_just_peps.csv")
+parse_csv("data/propep_g.csv", "genemark")
+parse_csv("data/propep_t.csv", "transdecoder")
+# find_distinct_transdecoder_peptides("output/temp_td_output.csv", "output/temp_gm_just_peps.csv")
+find_distinct_peptides("output/temp_td_output.csv", "output/temp_gm_output.csv")
 
 def main():
     print("Hello, World!")
