@@ -41,8 +41,7 @@ def extract_csv_data(input_file, db_type):
         raw_peptide = csv_data.at[i, 'Peptide']
         csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
     with open(temp_output, "w+") as temp_peptide_output:
-        csv_data.to_csv(temp_peptide_output, sep=',', mode='w', index=False)
-
+        csv_data[['Protein Accession', 'Peptide']].to_csv(temp_peptide_output, sep=',', mode='w', index=False)
 
 
 def find_distinct_peptides(transdecoder_file, genemark_file):
@@ -62,6 +61,8 @@ def find_distinct_peptides(transdecoder_file, genemark_file):
 
 
 extract_csv_data("data/propep_g.csv", "genemark")
+
+
 # extract_csv_data("data/propep_t.csv", "transdecoder")
 # find_distinct_peptides("output/temp_td_output.csv", "output/temp_gm_output.csv")
 
