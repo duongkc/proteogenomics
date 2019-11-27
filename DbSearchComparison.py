@@ -17,7 +17,7 @@ def clean_peptide_col(peptide_column):
     return stripped_pep
 
 
-def parse_csv(input_file, db_type):
+def extract_csv_data(input_file, db_type):
     """Parses the PEAKS protein-peptide csv file to extract the peptides and matching ORF accessions"""
     # And write them to a new temporary file, (should be split into sub methods tbh
     if db_type == "genemark":
