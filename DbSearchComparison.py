@@ -54,8 +54,8 @@ def find_distinct_peptides(transdecoder_file, genemark_file):
             .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'])
 
 
-parse_csv("data/propep_g.csv", "genemark")
-parse_csv("data/propep_t.csv", "transdecoder")
+extract_csv_data("data/propep_g.csv", "genemark")
+extract_csv_data("data/propep_t.csv", "transdecoder")
 find_distinct_peptides("output/temp_td_output.csv", "output/temp_gm_output.csv")
 
 
