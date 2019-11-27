@@ -25,17 +25,24 @@ def extract_csv_data(input_file, db_type):
     else:
         temp_output = "output/temp_td_output.csv"
 
+    # with open(temp_output, "w+") as temp_peptide_output:
+    #     temp_peptide_output.write("Protein Accession,Peptide\n")
+    #     with open(input_file, "r") as f:
+    #         next(f)
+    #         for line in f:
+    #             columns = line.split(",")
+    #             accession = columns[2]
+    #             peptide_col = columns[3]
+    #             peptide = clean_peptide_col(peptide_col)
+    #             new_line = accession + "," + peptide + "\n"
+    #             temp_peptide_output.write(new_line)
+    csv_data = pandas.read_csv(input_file, header='infer', delimiter=',')
+    for i, row in csv_data.iterrows():
+        raw_peptide = csv_data.at[i, 'Peptide']
+        csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
     with open(temp_output, "w+") as temp_peptide_output:
-        temp_peptide_output.write("Protein Accession,Peptide\n")
-        with open(input_file, "r") as f:
-            next(f)
-            for line in f:
-                columns = line.split(",")
-                accession = columns[2]
-                peptide_col = columns[3]
-                peptide = clean_peptide_col(peptide_col)
-                new_line = accession + "," + peptide + "\n"
-                temp_peptide_output.write(new_line)
+        csv_data.to_csv(temp_peptide_output, sep=',', mode='w', index=False)
+
 
 
 def find_distinct_peptides(transdecoder_file, genemark_file):
@@ -55,8 +62,8 @@ def find_distinct_peptides(transdecoder_file, genemark_file):
 
 
 extract_csv_data("data/propep_g.csv", "genemark")
-extract_csv_data("data/propep_t.csv", "transdecoder")
-find_distinct_peptides("output/temp_td_output.csv", "output/temp_gm_output.csv")
+# extract_csv_data("data/propep_t.csv", "transdecoder")
+# find_distinct_peptides("output/temp_td_output.csv", "output/temp_gm_output.csv")
 
 
 def main():
