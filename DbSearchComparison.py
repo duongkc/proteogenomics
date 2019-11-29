@@ -18,7 +18,7 @@ def clean_peptide_col(peptide_column):
 
 
 def extract_csv_data(input_file):
-    """Parses the PEAKS protein-peptide csv file to extract the peptides and matching ORF accessions"""
+    """Reads PEAKS protein-peptide.csv file as dataframe to extract unique peptides and matching ORF accessions"""
     csv_data = pandas.read_csv(input_file, header='infer', delimiter=',')
     for i, row in csv_data.iterrows():
         raw_peptide = csv_data.at[i, 'Peptide']
