@@ -17,7 +17,7 @@ def clean_peptide_col(peptide_column):
     return stripped_pep
 
 
-def extract_csv_data(input_file, db_type):
+def extract_csv_data(input_file):
     """Parses the PEAKS protein-peptide csv file to extract the peptides and matching ORF accessions"""
     csv_data = pandas.read_csv(input_file, header='infer', delimiter=',')
     for i, row in csv_data.iterrows():
@@ -41,8 +41,8 @@ def find_distinct_peptides(transdecoder_data, genemark_data):
             .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'])
 
 
-genemark_data = extract_csv_data("data/propep_g.csv", "genemark")
-transdecoder_data = extract_csv_data("data/propep_t.csv", "transdecoder")
+genemark_data = extract_csv_data("data/propep_g.csv")
+transdecoder_data = extract_csv_data("data/propep_t.csv")
 
 find_distinct_peptides(transdecoder_data, genemark_data)
 
