@@ -46,12 +46,13 @@ def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
 
 
 def main(argv):
+    print(' '.join(argv))
     genemark_csv = ''
     transdecoder_csv = ''
     output_prefix = ''
 
     try:
-        opts, args = getopt.getopt(argv, 'g:t:p:', ['genemark=', 'transdecoder=', 'prefix='])
+        opts, args = getopt.getopt(argv[1:], 'g:t:p:', ['genemark=', 'transdecoder=', 'prefix='])
     except getopt.GetoptError:
         print("usage: DbSearchComparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>")
         sys.exit(2)
@@ -72,11 +73,13 @@ def main(argv):
     except FileExistsError:
         pass
 
+    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
     genemark_data = extract_csv_data(genemark_csv)
     transdecoder_data = extract_csv_data(transdecoder_csv)
 
     find_distinct_peptides(transdecoder_data, genemark_data, output_prefix)
+    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv)
