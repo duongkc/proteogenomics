@@ -3,6 +3,8 @@ import sys
 import datetime
 import re
 import pandas
+import getopt
+import os
 
 """
 Short script to compare the PEAKS psm search output to find overlap and distinction between the matched peptides.
@@ -27,10 +29,12 @@ def extract_csv_data(input_file):
     return csv_data
 
 
-def find_distinct_peptides(transdecoder_data, genemark_data):
+def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
     """Filters the CSV files so only distinct peptides remain"""
-    with open("output/distinct_td.csv", "w+") as distinct_transdecoder, \
-            open("output/distinct_gm.csv", "w+") as distinct_genemark:
+    distinct_td_csv = "comparison_output/{}_distinct_td.csv".format(prefix)
+    distinct_gm_csv = "comparison_output/{}_distinct_gm.csv".format(prefix)
+    with open(distinct_td_csv, "w+") as distinct_transdecoder, \
+            open(distinct_gm_csv, "w+") as distinct_genemark:
         td_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='left', indicator=True) \
             .query("_merge == 'left_only'")
         gm_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='right', indicator=True) \
@@ -41,11 +45,38 @@ def find_distinct_peptides(transdecoder_data, genemark_data):
             .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'])
 
 
-genemark_data = extract_csv_data("data/propep_g.csv")
-transdecoder_data = extract_csv_data("data/propep_t.csv")
+def main(argv):
+    genemark_csv = ''
+    transdecoder_csv = ''
+    output_prefix = ''
 
-find_distinct_peptides(transdecoder_data, genemark_data)
+    try:
+        opts, args = getopt.getopt(argv, 'g:t:p:', ['genemark=', 'transdecoder=', 'prefix='])
+    except getopt.GetoptError:
+        print("usage: DbSearchComparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>")
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt in ('-g', '--genemark'):
+            genemark_csv = arg
+        elif opt in ('-t', '--transdecoder'):
+            transdecoder_csv = arg
+        elif opt in ('-p', '--prefix'):
+            output_prefix = arg
+        else:
+            print("usage: DbSearchComparison.py -g <genemark csv file> -t <transdecoder  csv file> -p <output prefix>")
+            sys.exit(2)
+
+    try:
+        os.makedirs("comparison_output")
+    except FileExistsError:
+        pass
+
+    genemark_data = extract_csv_data(genemark_csv)
+    transdecoder_data = extract_csv_data(transdecoder_csv)
+
+    find_distinct_peptides(transdecoder_data, genemark_data, output_prefix)
 
 
-def main():
-    print("Hello, World!")
+if __name__ == '__main__':
+    main(sys.argv[1:])
