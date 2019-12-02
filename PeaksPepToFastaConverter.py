@@ -9,9 +9,7 @@ import os
 
 def find_pep_from_accession(accession):
     """retrieves pep sequence from the full pep fasta file"""
-    output = "distinct_pep_fasta/{}_distinct_pep.fasta".format("test")
-    with open(output, "w+") as new_fasta:
-        print("Hello, World!")
+
 
 
 def extract_comparison_csv_data():
@@ -24,3 +22,6 @@ def extract_comparison_csv_data():
 
 
 accessions = extract_comparison_csv_data()
+output = "distinct_pep_fasta/{}_distinct_pep.fasta".format("test")
+with open(output, "w+") as new_fasta:
+    print("Hello, World!")
