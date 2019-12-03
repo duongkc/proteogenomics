@@ -5,6 +5,8 @@ import datetime
 import pandas
 import getopt
 import os
+import Bio
+from Bio import SeqIO
 
 """
 usage: PeaksPepToFastaConverter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>
@@ -14,20 +16,22 @@ usage: PeaksPepToFastaConverter.py -c <distinct peptide csv> -f <peptide fasta> 
 def find_pep_from_accession(old_fasta, accession):
     """retrieves pep sequence from the full pep fasta file"""
     sequence = ""
-    for line in old_fasta:
-        if line.startswith(">") and accession in line:
-            sequence = ""
-            continue
-        elif line.startswith(">") and accession not in line:
-            break
-        sequence += line
+    # for line in old_fasta:
+    #     if line.startswith(">") and accession in line:
+    #         sequence = ""
+    #         continue
+    #     elif line.startswith(">") and accession not in line:
+    #         break
+    #     sequence += line
+
+    # print(sequence)
     return sequence
 
 
 def extract_comparison_csv_data(input_file):
     """Reads the comparison csv data as dataframe"""
     csv_data = pandas.read_csv(input_file, header='infer', delimiter=',')
-    unique_accessions = csv_data[['Protein Accession']].drop_duplicates(keep='first')
+    unique_accessions = csv_data['Protein Accession'].drop_duplicates(keep='first').values.tolist()
 
     return unique_accessions
 
@@ -64,11 +68,10 @@ def main(argv):
     accessions = extract_comparison_csv_data(input_csv)
     output = "distinct_pep_fasta/{}_distinct_pep.fasta".format(output_prefix)
     with open(output, "w+") as new_fasta, open(old_pep_fasta, "r") as old_fasta:
-        for i, row in accessions.iterrows():
-            accession = row['Protein Accession']
-            accession_seq = find_pep_from_accession(old_fasta, accession)
-            new_fasta.write(">" + accession + "\n")
-            new_fasta.write(accession_seq)
+        for record in SeqIO.parse(old_fasta, 'fasta'):
+            if record.id.split()[0] in accessions:
+                sequence = record.seq
+                SeqIO.write(record, new_fasta, "fasta")
     print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
