@@ -17,11 +17,11 @@ nuc_dict = {
 }
 
 
-def find_fasta_line(trans_file, isoform_id):
-    """Finds the right RNA transcript using the TRINITY gene isoform id found in the lst file"""
+def find_fasta_line(trans_file, accession):
+    """Finds the right RNA transcript using the TRINITY gene accession found in the lst file"""
     with open(trans_file, "r") as inF:
         for line in inF:
-            if isoform_id in line:
+            if accession in line:
                 if line.startswith(">"):
                     sequence = next(inF)
                     return sequence
@@ -29,7 +29,7 @@ def find_fasta_line(trans_file, isoform_id):
 
 
 def extract_gene_id(line):
-    """Extracts gene isoform id of the target transcript"""
+    """Extracts gene accession of the target transcript"""
     gene_id = line.split()[3]
 
     return gene_id
