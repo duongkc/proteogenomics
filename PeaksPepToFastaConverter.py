@@ -5,7 +5,6 @@ import datetime
 import pandas
 import getopt
 import os
-import Bio
 from Bio import SeqIO
 
 """
