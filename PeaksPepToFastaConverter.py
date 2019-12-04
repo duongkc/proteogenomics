@@ -8,6 +8,7 @@ import os
 from Bio import SeqIO
 
 """
+Small script for converting the distinct matched gene accessions back to peptide fastas
 usage: PeaksPepToFastaConverter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>
 """
 

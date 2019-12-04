@@ -8,6 +8,7 @@ import os
 
 """
 Short script to compare the PEAKS psm search output to find overlap and distinction between the matched peptides.
+usage: DbSearchComparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>
 """
 
 
