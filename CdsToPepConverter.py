@@ -40,7 +40,7 @@ def insert_newlines(seq, every=60):
 
 
 def parse_cds_fasta(file):
-    """"""
+    """Extracts cds data to convert and write to pep fasta file"""
     with open("output/Trinity.fasta.genemark.pep", "w+") as new_file:
 
         with open(file, "r") as f:
@@ -49,21 +49,24 @@ def parse_cds_fasta(file):
                 if line.startswith(">"):
                     if sequence:
                         pep = translate(sequence)
-                        pepn = insert_newlines(pep)
-                        new_file.write(pepn + "\n")
+                        fasta_pep = insert_newlines(pep)
+                        new_file.write(fasta_pep + "\n")
                     sequence = ""
                     header = line
                     new_file.write(header)
                 else:
                     sequence += line.rstrip()
             pep = translate(sequence)
-            pepn = insert_newlines(pep)
-            new_file.write(pepn + "\n")
+            fasta_pep = insert_newlines(pep)
+            new_file.write(fasta_pep + "\n")
 
 
+def main():
+
+    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    parse_cds_fasta("output/Trinity.fasta.genemark.cds")
+    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
-print(datetime.datetime.now())
-parse_cds_fasta("output/Trinity.fasta.genemark.cds")
-print("done")
-print(datetime.datetime.now())
+if __name__ == '__main__':
+    main()

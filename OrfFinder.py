@@ -107,10 +107,9 @@ def main(argv):
         else:
             print("usage: OrfFinder.py -g <genemarkfile> -t <transcriptfile>")
             sys.exit(2)
-    print(datetime.datetime.now())
+    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
     parse_genemark(genemark_file, transcript_file)
-    print("done")
-    print(datetime.datetime.now())
+    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
 if __name__ == '__main__':
