@@ -1,14 +1,14 @@
 #!/usr/bin/python3
-import sys
-import re
-import os
-import getopt
-import datetime
+"""short python module to extract ORFs found with GeneMarkS-T from the RNA transcripts assembled by Trinity.
+usage: orf_finder.py -g <genemarkfile> -t <transcriptfile>
+"""
 
-"""
-short python script to extract ORFs found with GeneMarkS-T from the RNA transcripts assembled by Trinity.
-usage: OrfFinder.py -g <genemarkfile> -t <transcriptfile>
-"""
+
+import datetime
+import getopt
+import os
+import sys
+
 nuc_dict = {
     "A": "T",
     "T": "A",
@@ -97,7 +97,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, 'g:t:', ['genemark=', 'transcript='])
     except getopt.GetoptError:
-        print("usage: OrfFinder.py -g <genemarkfile> -t <transcriptfile>")
+        print("usage: orf_finder.py -g <genemarkfile> -t <transcriptfile>")
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-g', '--genemark'):
@@ -105,7 +105,7 @@ def main(argv):
         elif opt in ('-t', '--transcript'):
             transcript_file = arg
         else:
-            print("usage: OrfFinder.py -g <genemarkfile> -t <transcriptfile>")
+            print("usage: orf_finder.py -g <genemarkfile> -t <transcriptfile>")
             sys.exit(2)
     print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
     parse_genemark(genemark_file, transcript_file)

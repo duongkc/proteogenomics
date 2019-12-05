@@ -1,16 +1,16 @@
 #!/usr/bin/python3
+"""Small module for converting the distinct matched gene accessions back to peptide fastas
+usage: peaks_to_pep_fasta_converter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>
+"""
 
-import sys
+
 import datetime
-import pandas
 import getopt
 import os
-from Bio import SeqIO
+import sys
 
-"""
-Small script for converting the distinct matched gene accessions back to peptide fastas
-usage: PeaksPepToFastaConverter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>
-"""
+import pandas
+from Bio import SeqIO
 
 
 def write_found_peptides_to_fasta(old_fasta, new_fasta, accessions):
@@ -38,7 +38,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv[1:], 'c:f:p:', ['csv=', 'fasta=', 'prefix='])
     except getopt.GetoptError:
-        print("usage: PeaksPepToFastaConverter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>")
+        print('usage: peaks_to_pep_fasta_converter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>')
         sys.exit(2)
 
     for opt, arg in opts:
@@ -49,7 +49,9 @@ def main(argv):
         elif opt in ('-p', '--prefix'):
             output_prefix = arg
         else:
-            print("usage: PeaksPepToFastaConverter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>")
+            print(
+                'usage: peaks_to_pep_fasta_converter.py -c <distinct peptide csv> -f <peptide fasta> -p <output prefix>'
+            )
             sys.exit(2)
 
     try:

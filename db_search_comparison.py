@@ -1,15 +1,16 @@
 #!/usr/bin/python3
-import sys
+"""Short module to compare the PEAKS psm search output to find overlap and distinction between the matched peptides.
+usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>
+"""
+
+
 import datetime
-import re
-import pandas
 import getopt
 import os
+import re
+import sys
 
-"""
-Short script to compare the PEAKS psm search output to find overlap and distinction between the matched peptides.
-usage: DbSearchComparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>
-"""
+import pandas
 
 
 def clean_peptide_col(peptide_column):
@@ -55,7 +56,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv[1:], 'g:t:p:', ['genemark=', 'transdecoder=', 'prefix='])
     except getopt.GetoptError:
-        print("usage: DbSearchComparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>")
+        print("usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>")
         sys.exit(2)
 
     for opt, arg in opts:
@@ -66,7 +67,7 @@ def main(argv):
         elif opt in ('-p', '--prefix'):
             output_prefix = arg
         else:
-            print("usage: DbSearchComparison.py -g <genemark csv file> -t <transdecoder  csv file> -p <output prefix>")
+            print("usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder  csv file> -p <output prefix>")
             sys.exit(2)
 
     try:
