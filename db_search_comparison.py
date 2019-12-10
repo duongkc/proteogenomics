@@ -42,9 +42,11 @@ def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
         gm_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='right', indicator=True) \
             .query("_merge == 'right_only'")
         td_merged[['Protein Accession_x', 'Peptide']] \
-            .to_csv(distinct_transdecoder, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'])
+            .to_csv(distinct_transdecoder, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'],
+                    line_terminator='\n')
         gm_merged[['Protein Accession_y', 'Peptide']] \
-            .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'])
+            .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'],
+                    line_terminator='\n')
 
 
 def main(argv):
