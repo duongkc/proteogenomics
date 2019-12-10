@@ -48,6 +48,9 @@ def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
     # print(len(overlap_merge.index))
     print(len(td_merged.index))
     print(len(gm_merged.index))
+    with open("comparison_output/test_distinct_gm.csv", "w+") as distinct_genemark:
+        gm_merged[['Protein Accession_y', 'Peptide']] \
+            .to_csv(distinct_genemark, sep=',', mode='w', line_terminator='\n', index=False, header=['Protein Accession', 'Peptide'])
 
 
 genemark_file = "data/propep_genemark.csv"
