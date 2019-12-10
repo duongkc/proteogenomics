@@ -77,12 +77,12 @@ def main(argv):
     except FileExistsError:
         pass
 
-    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     genemark_data = extract_csv_data(genemark_csv)
     transdecoder_data = extract_csv_data(transdecoder_csv)
 
     find_distinct_peptides(transdecoder_data, genemark_data, output_prefix)
-    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
 if __name__ == '__main__':

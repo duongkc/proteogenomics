@@ -64,9 +64,9 @@ def parse_cds_fasta(file):
 
 def main():
 
-    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     parse_cds_fasta("output/Trinity.fasta.genemark.cds")
-    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
 if __name__ == '__main__':

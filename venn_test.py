@@ -97,14 +97,14 @@ def main(argv):
     except FileExistsError:
         pass
 
-    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     decoy_trans_data = extract_csv_data(decoy_trans_file)
     decoy_genemark_data = extract_csv_data(decoy_genemark_file)
     real_trans_data = extract_csv_data(real_trans_file)
     real_genemark_data = extract_csv_data(real_genemark_file)
 
     create_venn_diagrams(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, output_prefix)
-    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
 if __name__ == '__main__':

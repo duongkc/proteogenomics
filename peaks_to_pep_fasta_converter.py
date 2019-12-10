@@ -30,7 +30,7 @@ def extract_comparison_csv_data(input_file):
 
 def main(argv):
     print(' '.join(argv))
-    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     input_csv = ''
     old_pep_fasta = ''
     output_prefix = ''
@@ -63,7 +63,7 @@ def main(argv):
     output = "distinct_pep_fasta/{}_distinct_pep.fasta".format(output_prefix)
     with open(output, "w+") as new_fasta, open(old_pep_fasta, "r") as old_fasta:
         write_found_peptides_to_fasta(old_fasta, new_fasta, accessions)
-    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
 if __name__ == '__main__':
