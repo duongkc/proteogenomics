@@ -34,20 +34,6 @@ def extract_csv_data(input_file):
 def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genemark, prefix):
     """Creates venn diagrams from the unique peptide lists of each file"""
 
-    td_merged = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='left', indicator=True) \
-        .query("_merge == 'left_only'")
-    gm_merged = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='right', indicator=True) \
-        .query("_merge == 'right_only'")
-
-    overlap_merge = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='inner', indicator=True) \
-        .query("_merge == 'both'")
-    print(len(overlap_merge.index))
-    print(len(td_merged.index))
-    print(len(gm_merged.index))
-    # with open("comparison_output/test_distinct_gm.csv", "w+") as distinct_genemark:
-    #     gm_merged[['Protein Accession_y', 'Peptide']] \
-    #         .to_csv(distinct_genemark, sep=',', mode='w', line_terminator='\n',
-    #                 index=False, header=['Protein Accession', 'Peptide'])
     list_td_decoy = set(decoy_genemark.Peptide)
     list_gm_decoy = set(decoy_transdecoder.Peptide)
     list_td = set(transdecoder.Peptide)
