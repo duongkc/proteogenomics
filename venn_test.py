@@ -1,17 +1,21 @@
 #!/usr/bin/python3
 """
--g data/propep_genemark.csv -t data/propep_transdecoder.csv -p test1
+-g data/propep_genemark_decoy.csv -t data/propep_transdecoder_decoy.csv -p test1
 """
 
-
+import datetime
+import getopt
+import os
 import re
+import sys
 
 import pandas
+from matplotlib import pyplot as plt
+from matplotlib_venn import venn2
 
 
 def clean_peptide_col(peptide_column):
     """Cleans up the peptide column by removing unnecessary information and returns the peptide"""
-    sample_line = "K.ELC(+57.02)EQ(+.98)EC(+57.02)EWEEITITGSDGSTR.V"
     no_parentheses_pep = re.sub(r'\([^()]*\)', '', peptide_column)
     stripped_pep = no_parentheses_pep.replace('.', '')
     return stripped_pep
@@ -27,36 +31,94 @@ def extract_csv_data(input_file):
     return csv_data
 
 
-def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
+def find_distinct_peptides(decoy_transdecoder, decoy_genemark, transdecoder, genemark, prefix):
     """Filters the CSV files so only distinct peptides remain"""
-    distinct_td_csv = "comparison_output/{}_distinct_td.csv".format(prefix)
-    distinct_gm_csv = "comparison_output/{}_distinct_gm.csv".format(prefix)
 
-    td_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='left', indicator=True) \
+    td_merged = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='left', indicator=True) \
         .query("_merge == 'left_only'")
-    gm_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='right', indicator=True) \
+    gm_merged = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='right', indicator=True) \
         .query("_merge == 'right_only'")
 
-    overlap_left = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='left', indicator=True)\
+    overlap_merge = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='inner', indicator=True) \
         .query("_merge == 'both'")
-    # overlap_merge = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='inner', indicator=True)\
-    #     .query("_merge == 'both'")
-    # overlap_left[['Protein Accession_x', 'Peptide']]\
-    #     .drop_duplicates(subset=['Protein Accession_x', 'Peptide'], keep='first')\
-    #     .to_csv(overlap_file, sep=',', mode='w', index=False)
-    # print(len(overlap_left.index))
-    # print(len(overlap_merge.index))
+    print(len(overlap_merge.index))
     print(len(td_merged.index))
     print(len(gm_merged.index))
-    with open("comparison_output/test_distinct_gm.csv", "w+") as distinct_genemark:
-        gm_merged[['Protein Accession_y', 'Peptide']] \
-            .to_csv(distinct_genemark, sep=',', mode='w', line_terminator='\n', index=False, header=['Protein Accession', 'Peptide'])
+    # with open("comparison_output/test_distinct_gm.csv", "w+") as distinct_genemark:
+    #     gm_merged[['Protein Accession_y', 'Peptide']] \
+    #         .to_csv(distinct_genemark, sep=',', mode='w', line_terminator='\n',
+    #                 index=False, header=['Protein Accession', 'Peptide'])
+    list_td_decoy = set(decoy_genemark.Peptide)
+    list_gm_decoy = set(decoy_transdecoder.Peptide)
+    list_td = set(transdecoder.Peptide)
+    list_gm = set(genemark.Peptide)
+
+    fig, axes = plt.subplots(nrows=2, ncols=2)
+    # total_v1 = len(list_td.union(list_gm))
+    # v1 = venn2([list_td, list_gm], set_labels=('Transdecoder', 'GenemarkS-T'), ax=axes[0][0],
+    #            subset_label_formatter=lambda x: f"{(x/total_v1):1.0%}")
+    v1 = venn2([list_td, list_gm], set_labels=('Transdecoder', 'GenemarkS-T'), ax=axes[0][0])
+    v2 = venn2([list_td_decoy, list_gm_decoy], set_labels=('Transdecoder decoy', 'GenemarkS-T decoy'), ax=axes[0][1])
+    v3 = venn2([list_td, list_td_decoy], set_labels=('Transdecoder', 'Transdecoder decoy'), ax=axes[1][0])
+    v4 = venn2([list_gm, list_gm_decoy], set_labels=('GenemarkS-T', 'GenemarkS-T decoy'), ax=axes[1][1])
+
+    plt.suptitle('Sample 01 peptide matches')
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
+    plt.tight_layout()
+    plt.savefig('sample_{}.png'.format(prefix))
 
 
-genemark_file = "data/propep_genemark.csv"
-trans_file = "data/propep_transdecoder.csv"
+# decoy_genemark_file = "data/propep_genemark_decoy.csv"
+# decoy_trans_file = "data/propep_transdecoder_decoy.csv"
+# real_genemark_file = "data/propep_genemark_real.csv"
+# real_trans_file = "data/propep_transdecoder_real.csv"
 
-trans_data = extract_csv_data(trans_file)
-genemark_data = extract_csv_data(genemark_file)
 
-find_distinct_peptides(trans_data, genemark_data, "test")
+def main(argv):
+    print(' '.join(argv))
+    real_genemark_file = ''
+    real_trans_file = ''
+    decoy_genemark_file = ''
+    decoy_trans_file = ''
+    output_prefix = ''
+
+    try:
+        opts, args = getopt.getopt(argv[1:], 'g:t:h:u:p:', ['genemark=', 'transdecoder=',
+                                                            'genemark_decoy=', 'transdecoder_decoy=', 'prefix='])
+    except getopt.GetoptError:
+        print("usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>")
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt in ('-g', '--genemark'):
+            real_genemark_file = arg
+        elif opt in ('-t', '--transdecoder'):
+            real_trans_file = arg
+        elif opt in ('-h', '--genemark_decoy'):
+            decoy_genemark_file = arg
+        elif opt in ('-u', '--transdecoder_decoy'):
+            decoy_trans_file = arg
+        elif opt in ('-p', '--prefix'):
+            output_prefix = arg
+        else:
+            print(
+                "usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder  csv file> -p <output prefix>")
+            sys.exit(2)
+
+    try:
+        os.makedirs("comparison_output")
+    except FileExistsError:
+        pass
+
+    print("started at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    decoy_trans_data = extract_csv_data(decoy_trans_file)
+    decoy_genemark_data = extract_csv_data(decoy_genemark_file)
+    real_trans_data = extract_csv_data(real_trans_file)
+    real_genemark_data = extract_csv_data(real_genemark_file)
+
+    find_distinct_peptides(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, output_prefix)
+    print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+
+
+if __name__ == '__main__':
+    main(sys.argv)
