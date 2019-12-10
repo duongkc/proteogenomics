@@ -51,7 +51,7 @@ def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genem
     plt.suptitle('Sample 01 peptide matches')
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
-    plt.savefig('sample_{}.png'.format(prefix))
+    plt.savefig('comparison_graphs/sample_{}.png'.format(prefix))
 
 
 # decoy_genemark_file = "data/propep_genemark_decoy.csv"
