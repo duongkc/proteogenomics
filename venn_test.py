@@ -34,19 +34,19 @@ def extract_csv_data(input_file):
 def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genemark, prefix):
     """Creates venn diagrams from the unique peptide lists of each file"""
 
-    list_td_decoy = set(decoy_genemark.Peptide)
-    list_gm_decoy = set(decoy_transdecoder.Peptide)
-    list_td = set(transdecoder.Peptide)
-    list_gm = set(genemark.Peptide)
+    set_td_decoy = set(decoy_genemark.Peptide)
+    set_gm_decoy = set(decoy_transdecoder.Peptide)
+    set_td = set(transdecoder.Peptide)
+    set_gm = set(genemark.Peptide)
 
     fig, axes = plt.subplots(nrows=2, ncols=2)
     # total_v1 = len(list_td.union(list_gm))
     # v1 = venn2([list_td, list_gm], set_labels=('Transdecoder', 'GenemarkS-T'), ax=axes[0][0],
     #            subset_label_formatter=lambda x: f"{(x/total_v1):1.0%}")
-    v1 = venn2([list_td, list_gm], set_labels=('Transdecoder', 'GenemarkS-T'), ax=axes[0][0])
-    v2 = venn2([list_td_decoy, list_gm_decoy], set_labels=('Transdecoder decoy', 'GenemarkS-T decoy'), ax=axes[0][1])
-    v3 = venn2([list_td, list_td_decoy], set_labels=('Transdecoder', 'Transdecoder decoy'), ax=axes[1][0])
-    v4 = venn2([list_gm, list_gm_decoy], set_labels=('GenemarkS-T', 'GenemarkS-T decoy'), ax=axes[1][1])
+    v1 = venn2([set_td, set_gm], set_labels=('Transdecoder', 'GenemarkS-T'), ax=axes[0][0])
+    v2 = venn2([set_td_decoy, set_gm_decoy], set_labels=('Transdecoder decoy', 'GenemarkS-T decoy'), ax=axes[0][1])
+    v3 = venn2([set_td, set_td_decoy], set_labels=('Transdecoder', 'Transdecoder decoy'), ax=axes[1][0])
+    v4 = venn2([set_gm, set_gm_decoy], set_labels=('GenemarkS-T', 'GenemarkS-T decoy'), ax=axes[1][1])
 
     plt.suptitle('Sample 01 peptide matches')
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
