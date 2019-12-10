@@ -31,8 +31,8 @@ def extract_csv_data(input_file):
     return csv_data
 
 
-def find_distinct_peptides(decoy_transdecoder, decoy_genemark, transdecoder, genemark, prefix):
-    """Filters the CSV files so only distinct peptides remain"""
+def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genemark, prefix):
+    """Creates venn diagrams from the unique peptide lists of each file"""
 
     td_merged = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='left', indicator=True) \
         .query("_merge == 'left_only'")
@@ -116,7 +116,7 @@ def main(argv):
     real_trans_data = extract_csv_data(real_trans_file)
     real_genemark_data = extract_csv_data(real_genemark_file)
 
-    find_distinct_peptides(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, output_prefix)
+    create_venn_diagrams(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, output_prefix)
     print("finished at: " + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
