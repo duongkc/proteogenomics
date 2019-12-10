@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
--g data/propep_genemark_decoy.csv -t data/propep_transdecoder_decoy.csv -p test1
+usage: venn_test.py -g <genemark csv file> -t <transdecoder csv file> "
+                  "-h <decoy genemark file> -u <decoy transdecoder file> -p <output prefix>
 """
 
 import datetime
@@ -27,7 +28,6 @@ def extract_csv_data(input_file):
         raw_peptide = csv_data.at[i, 'Peptide']
         csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
     csv_data = csv_data[['Protein Accession', 'Peptide']].drop_duplicates(subset=['Peptide'], keep='first')
-    print(len(csv_data))
     return csv_data
 
 
@@ -71,8 +71,9 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv[1:], 'g:t:h:u:p:', ['genemark=', 'transdecoder=',
                                                             'genemark_decoy=', 'transdecoder_decoy=', 'prefix='])
-    except getopt.GetoptError:
-        print("usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>")
+    except (getopt.GetoptError, FileNotFoundError) as e:
+        print("usage: venn_test.py -g <genemark csv file> -t <transdecoder csv file> "
+              "-h <decoy genemark file> -u <decoy transdecoder file> -p <output prefix>")
         sys.exit(2)
 
     for opt, arg in opts:
@@ -87,12 +88,12 @@ def main(argv):
         elif opt in ('-p', '--prefix'):
             output_prefix = arg
         else:
-            print(
-                "usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder  csv file> -p <output prefix>")
+            print("usage: venn_test.py -g <genemark csv file> -t <transdecoder csv file> "
+                  "-h <decoy genemark file> -u <decoy transdecoder file> -p <output prefix>")
             sys.exit(2)
 
     try:
-        os.makedirs("comparison_output")
+        os.makedirs("comparison_graphs")
     except FileExistsError:
         pass
 
