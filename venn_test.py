@@ -53,6 +53,7 @@ def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
 genemark_file = "data/propep_genemark.csv"
 trans_file = "data/propep_transdecoder.csv"
 
-genemark_data = extract_csv_data(genemark_file)
 trans_data = extract_csv_data(trans_file)
-find_distinct_peptides(trans_file, genemark_file, "test")
+genemark_data = extract_csv_data(genemark_file)
+
+find_distinct_peptides(trans_data, genemark_data, "test")
