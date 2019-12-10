@@ -54,7 +54,7 @@ def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genem
     v4 = venn2([set_gm, set_gm_decoy], set_labels=('GenemarkS-T', 'GenemarkS-T decoy'), ax=axes[1][1],
                subset_label_formatter=lambda x: f"{(x/total_v4):.2%}")
 
-    plt.suptitle('Sample 01 peptide matches')
+    plt.suptitle('Sample {} peptide matches'.format(prefix))
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
     plt.savefig('comparison_graphs/sample_{}_percentage.png'.format(prefix))
