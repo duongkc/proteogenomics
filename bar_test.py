@@ -11,8 +11,9 @@ import re
 import sys
 
 import pandas
+import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib_venn import venn2
+
 
 
 def clean_peptide_col(peptide_column):
@@ -27,31 +28,78 @@ def extract_csv_data(input_file):
     for i, row in csv_data.iterrows():
         raw_peptide = csv_data.at[i, 'Peptide']
         csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
-    csv_data = csv_data[['Protein Accession', 'Peptide']].drop_duplicates(subset=['Peptide'], keep='first')
+    csv_data = csv_data.drop_duplicates(subset=['Protein Accession', 'Peptide'], keep='first')
     return csv_data
 
 
 def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genemark, prefix):
     """Creates venn diagrams from the unique peptide lists of each file"""
 
-    set_td_decoy = set(decoy_genemark.Peptide)
-    set_gm_decoy = set(decoy_transdecoder.Peptide)
-    set_td = set(transdecoder.Peptide)
-    set_gm = set(genemark.Peptide)
+    full_length_decoy_transdecoder = len(decoy_transdecoder.index)
+    full_length_decoy_genemark = len(decoy_genemark.index)
+    full_length_transdecoder = len(transdecoder.index)
+    full_length_genemark = len(genemark.index)
 
-    fig, axes = plt.subplots(nrows=2, ncols=2)
-    # total_v1 = len(list_td.union(list_gm))
-    # v1 = venn2([list_td, list_gm], set_labels=('Transdecoder', 'GenemarkS-T'), ax=axes[0][0],
-    #            subset_label_formatter=lambda x: f"{(x/total_v1):1.0%}")
-    v1 = venn2([set_td, set_gm], set_labels=('Transdecoder', 'GenemarkS-T'), ax=axes[0][0])
-    v2 = venn2([set_td_decoy, set_gm_decoy], set_labels=('Transdecoder decoy', 'GenemarkS-T decoy'), ax=axes[0][1])
-    v3 = venn2([set_td, set_td_decoy], set_labels=('Transdecoder', 'Transdecoder decoy'), ax=axes[1][0])
-    v4 = venn2([set_gm, set_gm_decoy], set_labels=('GenemarkS-T', 'GenemarkS-T decoy'), ax=axes[1][1])
+    unique_length_decoy_transdecoder = len(
+        decoy_transdecoder.drop_duplicates(subset=['Protein Accession'], keep='first'))
+    unique_length_decoy_genemark = len(decoy_genemark.drop_duplicates(subset=['Protein Accession'], keep='first'))
+    unique_length_transdecoder = len(transdecoder.drop_duplicates(subset=['Protein Accession'], keep='first'))
+    unique_length_genemark = len(genemark.drop_duplicates(subset=['Protein Accession'], keep='first'))
 
-    plt.suptitle('Sample 01 peptide matches')
+    tdd_merged = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='left', indicator=True) \
+        .query("_merge == 'left_only'")
+    gmd_merged = pandas.merge(decoy_transdecoder, decoy_genemark, on='Peptide', how='right', indicator=True) \
+        .query("_merge == 'right_only'")
+    td_merged = pandas.merge(transdecoder, genemark, on='Peptide', how='left', indicator=True) \
+        .query("_merge == 'left_only'")
+    gm_merged = pandas.merge(transdecoder, genemark, on='Peptide', how='right', indicator=True) \
+        .query("_merge == 'right_only'")
+
+    unique_merged_decoy_transdecoder = len(tdd_merged.drop_duplicates(subset=['Protein Accession_x'], keep='first'))
+    unique_merged_decoy_genemark = len(gmd_merged.drop_duplicates(subset=['Protein Accession_y'], keep='first'))
+    unique_merged_transdecoder = len(td_merged.drop_duplicates(subset=['Protein Accession_x'], keep='first'))
+    unique_merged_genemark = len(gm_merged.drop_duplicates(subset=['Protein Accession_y'], keep='first'))
+
+    full_lengths = [full_length_transdecoder, full_length_genemark,
+                    full_length_decoy_transdecoder, full_length_decoy_genemark]
+    unique_lengths = [unique_length_transdecoder, unique_length_genemark,
+                      unique_length_decoy_transdecoder, unique_length_decoy_genemark]
+    merged_gms = [len(gm_merged), len(gmd_merged)]
+    merged_tds = [len(td_merged), len(tdd_merged)]
+
+    unique_merged_tds = [unique_merged_transdecoder, unique_merged_decoy_transdecoder]
+    unique_merged_gms = [unique_merged_genemark, unique_merged_decoy_genemark]
+    names = ['Transdecoder', 'GenemarkS-T', 'Transdecoder+decoy', 'GenemarkS-T+decoy']
+    fig, axes = plt.subplots(2, 2, figsize=(15, 8))
+    axes[0][0].bar(names, full_lengths, color=('#67C3FF', '#FF8267'))
+    axes[0][1].bar(names, unique_lengths, color=('#67C3FF', '#FF8267'))
+
+    index = np.arange(2)
+    rects1 = axes[1][0].bar(index, merged_tds, 0.35, color='#67C3FF', label='Transdecoder')
+    rects2 = axes[1][0].bar(index + 0.35, merged_gms, 0.35, color='#FF8267', label='GenemarkS-T')
+
+    axes[1][0].set_xticks(index + 0.175)
+    axes[1][0].set_xticklabels(['Without decoy', 'With decoy'])
+    axes[1][0].legend()
+
+    rects3 = axes[1][1].bar(index, unique_merged_tds, 0.35, color='#67C3FF', label='Transdecoder')
+    rects4 = axes[1][1].bar(index + 0.35, unique_merged_gms, 0.35, color='#FF8267', label='GenemarkS-T')
+
+    axes[1][1].set_xticks(index + 0.175)
+    axes[1][1].set_xticklabels(['Without decoy', 'With decoy'])
+    axes[1][1].legend()
+
+    axes[0][0].title.set_text('Protein-peptide matches')
+    axes[0][1].title.set_text('Unique proteins in the matches')
+    axes[1][0].title.set_text('Protein-peptide matches unique to database')
+    axes[1][1].title.set_text('Unique proteins in matches unique to database')
+
+    plt.suptitle('Sample {} Protein-Peptide matches'.format(prefix))
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
-    plt.savefig('comparison_graphs/sample_{}.png'.format(prefix))
+    plt.savefig('comparison_graphs/sample_{}_bar.png'.format(prefix))
+    # plt.show()
+
 
 
 # decoy_genemark_file = "data/propep_genemark_decoy.csv"
