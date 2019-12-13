@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-
+"""
+Module that converts cds sequences to pep.
+"""
 
 import datetime
 
@@ -42,7 +44,7 @@ def insert_newlines(seq, every=60):
 
 def parse_cds_fasta(file):
     """Extracts cds data to convert and write to pep fasta file"""
-    with open("output/Trinity.fasta.genemark.pep", "w+") as new_file:
+    with open("../output/Trinity.fasta.genemark.pep", "w+") as new_file:
 
         with open(file, "r") as f:
             sequence = ""
@@ -65,7 +67,7 @@ def parse_cds_fasta(file):
 def main():
 
     print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    parse_cds_fasta("output/Trinity.fasta.genemark.cds")
+    parse_cds_fasta("../output/Trinity.fasta.genemark.cds")
     print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
