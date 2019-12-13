@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-usage: venn_percentage_test.py -g <genemark csv file> -t <transdecoder csv file> 
+usage: venn_percentage_test.py -g <genemark csv file> -t <transdecoder csv file>
                   -h <decoy genemark file> -u <decoy transdecoder file> -p <output prefix>
 """
 
