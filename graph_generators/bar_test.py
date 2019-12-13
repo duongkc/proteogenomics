@@ -10,8 +10,8 @@ import os
 import re
 import sys
 
-import pandas
 import numpy as np
+import pandas
 from matplotlib import pyplot as plt
 
 
