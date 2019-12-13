@@ -15,7 +15,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-
 def clean_peptide_col(peptide_column):
     """Cleans up the peptide column by removing unnecessary information and returns the peptide"""
     no_parentheses_pep = re.sub(r'\([^()]*\)', '', peptide_column)
@@ -98,14 +97,6 @@ def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genem
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
     plt.savefig('comparison_graphs/sample_{}_bar.png'.format(prefix))
-    # plt.show()
-
-
-
-# decoy_genemark_file = "data/propep_genemark_decoy.csv"
-# decoy_trans_file = "data/propep_transdecoder_decoy.csv"
-# real_genemark_file = "data/propep_genemark_real.csv"
-# real_trans_file = "data/propep_transdecoder_real.csv"
 
 
 def main(argv):

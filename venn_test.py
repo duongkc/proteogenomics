@@ -54,12 +54,6 @@ def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genem
     plt.savefig('comparison_graphs/sample_{}.png'.format(prefix))
 
 
-# decoy_genemark_file = "data/propep_genemark_decoy.csv"
-# decoy_trans_file = "data/propep_transdecoder_decoy.csv"
-# real_genemark_file = "data/propep_genemark_real.csv"
-# real_trans_file = "data/propep_transdecoder_real.csv"
-
-
 def main(argv):
     print(' '.join(argv))
     real_genemark_file = ''
