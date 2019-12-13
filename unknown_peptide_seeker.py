@@ -9,6 +9,7 @@ import re
 import sys
 
 import pandas
+from Bio import SeqIO
 
 
 def clean_peptide_col(peptide_column):
@@ -26,3 +27,32 @@ def extract_csv_data(input_file):
         csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
     csv_data = csv_data.drop_duplicates(subset='Peptide', keep='first').reset_index(drop=True)
     return csv_data
+
+
+def search_peptide_db(peptide_data, database):
+    """Checks for presence of peptides in protein database"""
+    # orig = 0
+    # counter = 0
+    for i, row in peptide_data.iterrows():
+        print(i)
+    #     orig += 1
+    #     flag = 0
+    #     peptide = row['Peptide']
+    #     for record in SeqIO.parse(database, "fasta"):
+    #         if peptide in record.seq:
+    #             flag = 1
+    #     if not flag:
+    #         counter += 1
+    # print(counter)
+    # print(orig)
+
+
+def main():
+    csv_data = extract_csv_data("data/propep_g.csv")
+    database_file = "data/sample_sprot.fasta"
+    with open(database_file, "r") as database:
+        search_peptide_db(csv_data, database)
+
+
+if __name__ == '__main__':
+    main()
