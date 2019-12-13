@@ -15,7 +15,6 @@ import pandas
 
 def clean_peptide_col(peptide_column):
     """Cleans up the peptide column by removing unnecessary information and returns the peptide"""
-    sample_line = "K.ELC(+57.02)EQ(+.98)EC(+57.02)EWEEITITGSDGSTR.V"
     no_parentheses_pep = re.sub(r'\([^()]*\)', '', peptide_column)
     stripped_pep = no_parentheses_pep.replace('.', '')
     return stripped_pep
