@@ -3,8 +3,7 @@
 A module that checks how many peptides from the PEAKS protein-peptide match results can be found in
 existing protein sequence databases and filters the unknown peptides to a separate file.
 """
-
-
+import datetime
 import re
 import sys
 
@@ -31,27 +30,23 @@ def extract_csv_data(input_file):
 
 def search_peptide_db(peptide_data, database):
     """Checks for presence of peptides in protein database"""
-    # orig = 0
-    # counter = 0
-    for i, row in peptide_data.iterrows():
-        print(i)
-    #     orig += 1
-    #     flag = 0
-    #     peptide = row['Peptide']
-    #     for record in SeqIO.parse(database, "fasta"):
-    #         if peptide in record.seq:
-    #             flag = 1
-    #     if not flag:
-    #         counter += 1
-    # print(counter)
-    # print(orig)
+
+    flag_list = [0] * len(peptide_data.index)
+    for record in SeqIO.parse(database, "fasta"):
+        for i, row in peptide_data.iterrows():
+            peptide = row['Peptide']
+            if peptide in record.seq:
+                flag_list[i] = 1
+    print(flag_list)
 
 
 def main():
+    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     csv_data = extract_csv_data("data/propep_g.csv")
-    database_file = "data/sample_sprot.fasta"
+    database_file = "data/uniprot_sprot.fasta"
     with open(database_file, "r") as database:
         search_peptide_db(csv_data, database)
+    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
 if __name__ == '__main__':
