@@ -10,6 +10,7 @@ import sys
 
 import pandas
 from Bio import SeqIO
+import numpy as np
 
 
 def clean_peptide_col(peptide_column):
@@ -38,7 +39,15 @@ def search_peptide_db(peptide_data, database):
             peptide = row['Peptide']
             if peptide in record.seq:
                 flag_list[i] = 1
-    print(flag_list)
+    return flag_list
+
+
+def write_unknown_peptide_data(peptide_data, flags):
+    output = "output/test_unknowns.csv"
+    with open(output, "w+") as unknown_pep_file:
+        filtered_df = peptide_data[np.array(flags, dtype=bool)]
+        filtered_df.to_csv(unknown_pep_file, sep=',', mode='w', header=True,
+                           line_terminator='\n')
 
 
 def main():
@@ -47,10 +56,11 @@ def main():
     database_file = "data/sample_sprot.fasta"
     if database_file.endswith(('fasta', 'fa')):
         with open(database_file, "r") as database:
-            search_peptide_db(csv_data, database)
+            flags = search_peptide_db(csv_data, database)
     else:
         with gzip.open(database_file, "rt") as database:
-            search_peptide_db(csv_data, database)
+            flags = search_peptide_db(csv_data, database)
+    write_unknown_peptide_data(csv_data, flags)
     print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
