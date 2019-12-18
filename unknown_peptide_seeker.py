@@ -44,7 +44,7 @@ def search_peptide_db(peptide_data, database):
 
 def write_unknown_peptide_data(peptide_data, flags):
     output = "output/test_unknowns.csv"
-    with open(output, "w+") as unknown_pep_file:
+    with open(output, "w") as unknown_pep_file:
         filtered_df = peptide_data[np.array(flags, dtype=bool)]
         filtered_df.to_csv(unknown_pep_file, sep=',', mode='w', header=True,
                            line_terminator='\n')
