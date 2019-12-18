@@ -4,6 +4,7 @@ A module that checks how many peptides from the PEAKS protein-peptide match resu
 existing protein sequence databases and filters the unknown peptides to a separate file.
 """
 import datetime
+import gzip
 import re
 import sys
 
@@ -43,9 +44,13 @@ def search_peptide_db(peptide_data, database):
 def main():
     print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     csv_data = extract_csv_data("data/propep_g.csv")
-    database_file = "data/uniprot_sprot.fasta"
-    with open(database_file, "r") as database:
-        search_peptide_db(csv_data, database)
+    database_file = "data/sample_sprot.fasta"
+    if database_file.endswith(('fasta', 'fa')):
+        with open(database_file, "r") as database:
+            search_peptide_db(csv_data, database)
+    else:
+        with gzip.open(database_file, "rt") as database:
+            search_peptide_db(csv_data, database)
     print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
