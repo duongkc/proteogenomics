@@ -5,6 +5,7 @@ existing protein sequence databases and filters the unknown peptides to a separa
 """
 import datetime
 import gzip
+import multiprocessing as mp
 import re
 import sys
 
@@ -30,15 +31,31 @@ def extract_csv_data(input_file):
     return csv_data
 
 
-def search_peptide_db(peptide_data, database):
-    """Checks for presence of peptides in protein database"""
-
+def flag_peptides(record, peptide_data):
+    peptide_data.reset_index(drop=True)
     flag_list = [0] * len(peptide_data.index)
-    for record in SeqIO.parse(database, "fasta"):
-        for i, row in peptide_data.iterrows():
-            peptide = row['Peptide']
-            if peptide in record.seq:
-                flag_list[i] = 1
+    for i, row in peptide_data.iterrows():
+        peptide = row['Peptide']
+        if peptide in record.seq:
+            flag_list[i] = 1
+    return flag_list
+
+
+def search_peptide_db(arguments):
+    """Checks for presence of peptides in protein database"""
+    n = 4 + 1
+    peptide_data, database_file, offset = arguments
+
+    with open(database_file, "r") as database:
+        count = 1
+        flag_list = [0] * len(peptide_data.index)  # REVERSE THIS
+        for record in SeqIO.parse(database, "fasta"):
+            if (count % n) - offset == 0:
+                for i, row in peptide_data.iterrows():
+                    peptide = row['Peptide']
+                    if peptide in record.seq:
+                        flag_list[i] = 1
+            count += 1
     return flag_list
 
 
@@ -52,15 +69,20 @@ def write_unknown_peptide_data(peptide_data, flags):
 
 def main():
     print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    csv_data = extract_csv_data("data/propep_g.csv")
+    csv_data = extract_csv_data("data/propep_genemark.csv")
     database_file = "data/sample_sprot.fasta"
-    if database_file.endswith(('fasta', 'fa')):
-        with open(database_file, "r") as database:
-            flags = search_peptide_db(csv_data, database)
-    else:
-        with gzip.open(database_file, "rt") as database:
-            flags = search_peptide_db(csv_data, database)
-    write_unknown_peptide_data(csv_data, flags)
+    # if database_file.endswith(('fasta', 'fa')):
+    #     with open(database_file, "r") as database:
+    #         flags = search_peptide_db(csv_data, database)
+    # else:
+    #     with gzip.open(database_file, "rt") as database:
+    #         flags = search_peptide_db(csv_data, database)
+    pool = mp.Pool(processes=4)
+    results = pool.map(search_peptide_db, [(csv_data, database_file, n) for n in range(1, 4 + 1)])
+    pool.close()
+    pool.join()
+    print(len(results))
+    # write_unknown_peptide_data(csv_data, flags)
     print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
