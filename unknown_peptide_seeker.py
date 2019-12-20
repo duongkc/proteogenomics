@@ -61,15 +61,32 @@ def search_peptide_db(arguments):
 
 def write_unknown_peptide_data(peptide_data, flags):
     output = "output/test_unknowns.csv"
+    flag_list_0 = np.invert(np.array(flags[0], dtype=bool))
+    flag_list_1 = np.invert(np.array(flags[1], dtype=bool))
+    flag_list_2 = np.invert(np.array(flags[2], dtype=bool))
+    flag_list_3 = np.invert(np.array(flags[3], dtype=bool))
+
+    # print(flag_list_0)
+    # print(flag_list_1)
+    # print(flag_list_2)
+    # print(flag_list_3)
+    # print(peptide_data.iloc[3])
+    # print(peptide_data.iloc[6])
+    # print(peptide_data.iloc[24])
+    # print(peptide_data.iloc[48])
+    # print(peptide_data.iloc[58])
+    # print(peptide_data.iloc[123])
+    merged_flag_list = flag_list_0 & flag_list_1 & flag_list_2 & flag_list_3
+    # print(merged_flag_list)
     with open(output, "w") as unknown_pep_file:
-        filtered_df = peptide_data[np.array(flags, dtype=bool)]
+        filtered_df = peptide_data[np.invert(merged_flag_list)]
         filtered_df.to_csv(unknown_pep_file, sep=',', mode='w', header=True,
                            line_terminator='\n')
 
 
 def main():
     print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    csv_data = extract_csv_data("data/propep_genemark.csv")
+    csv_data = extract_csv_data("data/propep_g.csv")
     database_file = "data/sample_sprot.fasta"
     # if database_file.endswith(('fasta', 'fa')):
     #     with open(database_file, "r") as database:
@@ -81,8 +98,8 @@ def main():
     results = pool.map(search_peptide_db, [(csv_data, database_file, n) for n in range(1, 4 + 1)])
     pool.close()
     pool.join()
-    print(len(results))
-    # write_unknown_peptide_data(csv_data, flags)
+    # print(len(results))
+    write_unknown_peptide_data(csv_data, results)
     print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
