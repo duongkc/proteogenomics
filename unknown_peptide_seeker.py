@@ -43,14 +43,14 @@ def flag_peptides(record, peptide_data):
 
 def search_peptide_db(arguments):
     """Checks for presence of peptides in protein database"""
-    n = 4 + 1
+    n = 4
     peptide_data, database_file, offset = arguments
 
     with open(database_file, "r") as database:
         count = 1
         flag_list = [0] * len(peptide_data.index)  # REVERSE THIS
         for record in SeqIO.parse(database, "fasta"):
-            if (count % n) - offset == 0:
+            if (count - offset) % n == 0:
                 for i, row in peptide_data.iterrows():
                     peptide = row['Peptide']
                     if peptide in record.seq:
