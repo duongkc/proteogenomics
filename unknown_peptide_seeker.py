@@ -6,6 +6,7 @@ existing protein sequence databases and filters the unknown peptides to a separa
 import datetime
 import gzip
 import multiprocessing as mp
+from os import cpu_count
 import re
 import sys
 
@@ -43,8 +44,7 @@ def flag_peptides(record, peptide_data):
 
 def search_peptide_db(arguments):
     """Checks for presence of peptides in protein database"""
-    n = 4
-    peptide_data, database_file, offset = arguments
+    peptide_data, database_file, n, offset = arguments
 
     with open(database_file, "r") as database:
         count = 1
@@ -82,14 +82,15 @@ def main():
     print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     csv_data = extract_csv_data("data/propep_g.csv")
     database_file = "data/sample_sprot.fasta"
+    cpu = cpu_count()
     # if database_file.endswith(('fasta', 'fa')):
     #     with open(database_file, "r") as database:
     #         flags = search_peptide_db(csv_data, database)
     # else:
     #     with gzip.open(database_file, "rt") as database:
     #         flags = search_peptide_db(csv_data, database)
-    pool = mp.Pool(processes=4)
-    results = pool.map(search_peptide_db, [(csv_data, database_file, n) for n in range(1, 4 + 1)])
+    pool = mp.Pool(processes=cpu)
+    results = pool.map(search_peptide_db, [(csv_data, database_file, cpu, i) for i in range(1, cpu + 1)])
     pool.close()
     pool.join()
 
