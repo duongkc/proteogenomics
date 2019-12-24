@@ -34,16 +34,6 @@ def extract_csv_data(input_file):
     return csv_data
 
 
-def flag_peptides(record, peptide_data):
-    peptide_data.reset_index(drop=True)
-    flag_list = [0] * len(peptide_data.index)
-    for i, row in peptide_data.iterrows():
-        peptide = row['Peptide']
-        if peptide in record.seq:
-            flag_list[i] = 1
-    return flag_list
-
-
 def search_peptide_db(arguments):
     """Checks for presence of peptides in protein database"""
     peptide_data, database_file, n, offset = arguments
