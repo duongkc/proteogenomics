@@ -48,23 +48,23 @@ def search_peptide_db(arguments):
 
     with open(database_file, "r") as database:
         count = 1
-        flag_list = [0] * len(peptide_data.index)  # REVERSE THIS
+        flag_list = [1] * len(peptide_data.index)  # REVERSE THIS
         for record in SeqIO.parse(database, "fasta"):
             if (count - offset) % n == 0:
                 for i, row in peptide_data.iterrows():
                     peptide = row['Peptide']
                     if peptide in record.seq:
-                        flag_list[i] = 1
+                        flag_list[i] = 0
             count += 1
     return flag_list
 
 
 def write_unknown_peptide_data(peptide_data, flags):
     output = "output/test_unknowns.csv"
-    flag_list_0 = np.invert(np.array(flags[0], dtype=bool))
-    flag_list_1 = np.invert(np.array(flags[1], dtype=bool))
-    flag_list_2 = np.invert(np.array(flags[2], dtype=bool))
-    flag_list_3 = np.invert(np.array(flags[3], dtype=bool))
+    flag_list_0 = np.array(flags[0], dtype=bool)
+    flag_list_1 = np.array(flags[1], dtype=bool)
+    flag_list_2 = np.array(flags[2], dtype=bool)
+    flag_list_3 = np.array(flags[3], dtype=bool)
 
     # print(flag_list_0)
     # print(flag_list_1)
