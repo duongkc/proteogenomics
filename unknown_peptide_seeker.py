@@ -59,25 +59,19 @@ def search_peptide_db(arguments):
     return flag_list
 
 
-def write_unknown_peptide_data(peptide_data, flags):
-    output = "output/test_unknowns.csv"
-    flag_list_0 = np.array(flags[0], dtype=bool)
-    flag_list_1 = np.array(flags[1], dtype=bool)
-    flag_list_2 = np.array(flags[2], dtype=bool)
-    flag_list_3 = np.array(flags[3], dtype=bool)
+def merge_flags(flags):
+    for i in range(len(flags)):
+        flags[i] = np.array(flags[i], dtype=bool)
 
-    # print(flag_list_0)
-    # print(flag_list_1)
-    # print(flag_list_2)
-    # print(flag_list_3)
-    # print(peptide_data.iloc[3])
-    # print(peptide_data.iloc[6])
-    # print(peptide_data.iloc[24])
-    # print(peptide_data.iloc[48])
-    # print(peptide_data.iloc[58])
-    # print(peptide_data.iloc[123])
-    merged_flag_list = flag_list_0 & flag_list_1 & flag_list_2 & flag_list_3
-    # print(merged_flag_list)
+    merged_flag_list = flags[0]
+    for i in range(1, len(flags)):
+        merged_flag_list = merged_flag_list & flags[i]
+    return merged_flag_list
+
+
+def write_unknown_peptide_data(peptide_data, merged_flag_list):
+    output = "output/test_unknowns.csv"
+
     with open(output, "w") as unknown_pep_file:
         filtered_df = peptide_data[np.invert(merged_flag_list)]
         filtered_df.to_csv(unknown_pep_file, sep=',', mode='w', header=True,
@@ -98,8 +92,9 @@ def main():
     results = pool.map(search_peptide_db, [(csv_data, database_file, n) for n in range(1, 4 + 1)])
     pool.close()
     pool.join()
-    # print(len(results))
-    write_unknown_peptide_data(csv_data, results)
+
+    merged_flags = merge_flags(results)
+    write_unknown_peptide_data(csv_data, merged_flags)
     print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
 
