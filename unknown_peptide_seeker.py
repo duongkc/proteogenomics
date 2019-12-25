@@ -119,6 +119,7 @@ def main(argv):
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError:
         print(__doc__)
+        sys.exit(2)
 
 
 if __name__ == '__main__':
