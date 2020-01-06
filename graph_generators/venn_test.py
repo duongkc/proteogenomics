@@ -51,7 +51,7 @@ def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genem
     plt.suptitle('Sample {} peptide matches'.format(prefix))
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
-    plt.savefig('comparison_graphs/sample_{}.png'.format(prefix))
+    plt.savefig('output/comparison_graphs/sample_{}.png'.format(prefix))
 
 
 def main(argv):
@@ -87,7 +87,7 @@ def main(argv):
             sys.exit(2)
 
     try:
-        os.makedirs("comparison_graphs")
+        os.makedirs("output/comparison_graphs")
     except FileExistsError:
         pass
 

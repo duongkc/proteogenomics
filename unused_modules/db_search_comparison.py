@@ -32,8 +32,8 @@ def extract_csv_data(input_file):
 
 def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
     """Filters the CSV files so only distinct peptides remain"""
-    distinct_td_csv = "comparison_output/{}_distinct_td.csv".format(prefix)
-    distinct_gm_csv = "comparison_output/{}_distinct_gm.csv".format(prefix)
+    distinct_td_csv = "output/comparison_output/{}_distinct_td.csv".format(prefix)
+    distinct_gm_csv = "output/comparison_output/{}_distinct_gm.csv".format(prefix)
     with open(distinct_td_csv, "w+") as distinct_transdecoder, \
             open(distinct_gm_csv, "w+") as distinct_genemark:
         td_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='left', indicator=True) \
@@ -72,7 +72,7 @@ def main(argv):
             sys.exit(2)
 
     try:
-        os.makedirs("../output/comparison_output")
+        os.makedirs("output/comparison_output")
     except FileExistsError:
         pass
 
