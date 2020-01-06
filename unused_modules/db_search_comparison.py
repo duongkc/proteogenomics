@@ -72,7 +72,7 @@ def main(argv):
             sys.exit(2)
 
     try:
-        os.makedirs("comparison_output")
+        os.makedirs("../output/comparison_output")
     except FileExistsError:
         pass
 
