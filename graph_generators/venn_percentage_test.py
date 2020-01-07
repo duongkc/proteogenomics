@@ -27,7 +27,7 @@ def extract_csv_data(input_file):
     for i, row in csv_data.iterrows():
         raw_peptide = csv_data.at[i, 'Peptide']
         csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
-    csv_data = csv_data[['Protein Accession', 'Peptide']].drop_duplicates(subset=['Peptide'], keep='first')
+    csv_data = csv_data.drop_duplicates(subset=['Peptide'], keep='first')
     return csv_data
 
 
