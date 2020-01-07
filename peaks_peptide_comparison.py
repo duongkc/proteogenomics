@@ -1,6 +1,8 @@
 #!/usr/bin/python3
-"""Short module to compare the PEAKS psm search output to find overlap and distinction between the matched peptides.
-usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>
+"""Short module to compare two PEAKS psm search output files to find overlap and distinction between the two in terms
+   of matched peptides.
+
+    usage: peaks_peptide_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>
 """
 
 
@@ -26,7 +28,7 @@ def extract_csv_data(input_file):
     for i, row in csv_data.iterrows():
         raw_peptide = csv_data.at[i, 'Peptide']
         csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
-    csv_data = csv_data.drop_duplicates(subset=['Protein Accession', 'Peptide'], keep='first')
+    csv_data = csv_data.drop_duplicates(subset=['Peptide'], keep='first')
     return csv_data
 
 
@@ -40,11 +42,11 @@ def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
             .query("_merge == 'left_only'")
         gm_merged = pandas.merge(transdecoder_data, genemark_data, on='Peptide', how='right', indicator=True) \
             .query("_merge == 'right_only'")
-        td_merged[['Protein Accession_x', 'Peptide']] \
-            .to_csv(distinct_transdecoder, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'],
+        td_merged[['Peptide']] \
+            .to_csv(distinct_transdecoder, sep=',', mode='w', index=False, header=['Peptide'],
                     line_terminator='\n')
-        gm_merged[['Protein Accession_y', 'Peptide']] \
-            .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Protein Accession', 'Peptide'],
+        gm_merged[['Peptide']] \
+            .to_csv(distinct_genemark, sep=',', mode='w', index=False, header=['Peptide'],
                     line_terminator='\n')
 
 
@@ -57,7 +59,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv[1:], 'g:t:p:', ['genemark=', 'transdecoder=', 'prefix='])
     except getopt.GetoptError:
-        print("usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>")
+        print(__doc__)
         sys.exit(2)
 
     for opt, arg in opts:
@@ -68,7 +70,7 @@ def main(argv):
         elif opt in ('-p', '--prefix'):
             output_prefix = arg
         else:
-            print("usage: db_search_comparison.py -g <genemark csv file> -t <transdecoder  csv file> -p <output prefix>")
+            print(__doc__)
             sys.exit(2)
 
     try:
