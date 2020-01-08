@@ -18,7 +18,7 @@ import csv_dataframe
 
 
 def search_peptide_db(arguments):
-    """Checks for presence of peptides in protein database"""
+    """Checks for presence of peptides in protein database and notes them down in a boolean list"""
     peptide_data, database_file, n, offset = arguments
 
     with open(database_file, "r") as database:
@@ -35,6 +35,7 @@ def search_peptide_db(arguments):
 
 
 def merge_flags(flags):
+    """Merges the boolean lists of the separate processes into 1 list"""
     for i in range(len(flags)):
         flags[i] = np.array(flags[i], dtype=bool)
 
@@ -45,6 +46,7 @@ def merge_flags(flags):
 
 
 def write_unknown_peptide_data(peptide_data, merged_flag_list, prefix):
+    """Writes filtered dataframe to a new csv file"""
     output = "output/unknown_peptides/{}_unknown_peptides.csv".format(prefix)
 
     with open(output, "w") as unknown_pep_file:
