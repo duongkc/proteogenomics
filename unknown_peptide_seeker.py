@@ -9,29 +9,12 @@ import datetime
 import getopt
 import multiprocessing as mp
 import os
-import re
 import sys
 
 import numpy as np
-import pandas
 from Bio import SeqIO
 
-
-def clean_peptide_col(peptide_column):
-    """Cleans up the peptide column by removing unnecessary information and returns the peptide"""
-    no_parentheses_pep = re.sub(r'\([^()]*\)', '', peptide_column)
-    stripped_pep = no_parentheses_pep.replace('.', '')
-    return stripped_pep
-
-
-def extract_csv_data(input_file):
-    """Reads PEAKS protein-peptide.csv file as dataframe to extract unique peptides and matching ORF accessions"""
-    csv_data = pandas.read_csv(input_file, header='infer', delimiter=',')
-    for i, row in csv_data.iterrows():
-        raw_peptide = csv_data.at[i, 'Peptide']
-        csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
-    csv_data = csv_data.drop_duplicates(subset='Peptide', keep='first').reset_index(drop=True)
-    return csv_data
+import csv_dataframe
 
 
 def search_peptide_db(arguments):
@@ -102,7 +85,7 @@ def main(argv):
         pass
 
     try:
-        csv_data = extract_csv_data(csv_file)
+        csv_data = csv_dataframe.extract_csv_data(csv_file)
         # if database_file.endswith(('fasta', 'fa')):
         #     with open(database_file, "r") as database:
         #         flags = search_peptide_db(csv_data, database)

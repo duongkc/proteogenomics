@@ -7,28 +7,12 @@ usage: venn_percentage_test.py -g <genemark csv file> -t <transdecoder csv file>
 import datetime
 import getopt
 import os
-import re
 import sys
 
-import pandas
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn2
 
-
-def clean_peptide_col(peptide_column):
-    """Cleans up the peptide column by removing unnecessary information and returns the peptide"""
-    no_parentheses_pep = re.sub(r'\([^()]*\)', '', peptide_column)
-    stripped_pep = no_parentheses_pep.replace('.', '')
-    return stripped_pep
-
-
-def extract_csv_data(input_file):
-    csv_data = pandas.read_csv(input_file, header='infer', delimiter=',')
-    for i, row in csv_data.iterrows():
-        raw_peptide = csv_data.at[i, 'Peptide']
-        csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
-    csv_data = csv_data.drop_duplicates(subset=['Peptide'], keep='first')
-    return csv_data
+import csv_dataframe
 
 
 def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genemark, prefix):
@@ -98,10 +82,10 @@ def main(argv):
         pass
 
     print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    decoy_trans_data = extract_csv_data(decoy_trans_file)
-    decoy_genemark_data = extract_csv_data(decoy_genemark_file)
-    real_trans_data = extract_csv_data(real_trans_file)
-    real_genemark_data = extract_csv_data(real_genemark_file)
+    decoy_trans_data = csv_dataframe.extract_csv_data(decoy_trans_file)
+    decoy_genemark_data = csv_dataframe.extract_csv_data(decoy_genemark_file)
+    real_trans_data = csv_dataframe.extract_csv_data(real_trans_file)
+    real_genemark_data = csv_dataframe.extract_csv_data(real_genemark_file)
 
     create_venn_diagrams(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, output_prefix)
     print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))

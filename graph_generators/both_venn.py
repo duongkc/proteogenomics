@@ -10,28 +10,12 @@ Usage:
 import datetime
 import getopt
 import os
-import re
 import sys
 
-import pandas
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn2
 
-
-def clean_peptide_col(peptide_column):
-    """Cleans up the peptide column by removing unnecessary information and returns the peptide"""
-    no_parentheses_pep = re.sub(r'\([^()]*\)', '', peptide_column)
-    stripped_pep = no_parentheses_pep.replace('.', '')
-    return stripped_pep
-
-
-def extract_csv_data(input_file):
-    csv_data = pandas.read_csv(input_file, header='infer', delimiter=',')
-    for i, row in csv_data.iterrows():
-        raw_peptide = csv_data.at[i, 'Peptide']
-        csv_data.at[i, 'Peptide'] = clean_peptide_col(raw_peptide)
-    csv_data = csv_data[['Protein Accession', 'Peptide']].drop_duplicates(subset=['Peptide'], keep='first')
-    return csv_data
+import csv_dataframe
 
 
 def create_venn_diagrams(genemark, transdecoder, prefix):
@@ -83,8 +67,8 @@ def main(argv):
 
     print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     try:
-        trans_data = extract_csv_data(trans_file)
-        genemark_data = extract_csv_data(genemark_file)
+        trans_data = csv_dataframe.extract_csv_data(trans_file)
+        genemark_data = csv_dataframe.extract_csv_data(genemark_file)
 
         create_venn_diagrams(genemark_data, trans_data, output_prefix)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
