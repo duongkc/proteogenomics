@@ -3,9 +3,8 @@
 usage: venn_test.py -g <genemark csv file> -t <transdecoder csv file>
                   -h <decoy genemark file> -u <decoy transdecoder file> -p <output prefix>
 """
-
+import argparse
 import datetime
-import getopt
 import os
 import re
 import sys
@@ -101,49 +100,38 @@ def create_venn_diagrams(decoy_transdecoder, decoy_genemark, transdecoder, genem
 
 def main(argv):
     print(' '.join(argv))
-    real_genemark_file = ''
-    real_trans_file = ''
-    decoy_genemark_file = ''
-    decoy_trans_file = ''
-    output_prefix = ''
 
-    try:
-        opts, args = getopt.getopt(argv[1:], 'g:t:h:u:p:', ['genemark=', 'transdecoder=',
-                                                            'genemark_decoy=', 'transdecoder_decoy=', 'prefix='])
-    except (getopt.GetoptError, FileNotFoundError) as e:
-        print("usage: venn_test.py -g <genemark csv file> -t <transdecoder csv file> "
-              "-h <decoy genemark file> -u <decoy transdecoder file> -p <output prefix>")
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt in ('-g', '--genemark'):
-            real_genemark_file = arg
-        elif opt in ('-t', '--transdecoder'):
-            real_trans_file = arg
-        elif opt in ('-h', '--genemark_decoy'):
-            decoy_genemark_file = arg
-        elif opt in ('-u', '--transdecoder_decoy'):
-            decoy_trans_file = arg
-        elif opt in ('-p', '--prefix'):
-            output_prefix = arg
-        else:
-            print("usage: venn_test.py -g <genemark csv file> -t <transdecoder csv file> "
-                  "-h <decoy genemark file> -u <decoy transdecoder file> -p <output prefix>")
-            sys.exit(2)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-g', '--genemark', action="store", dest="genemark", required=True,
+                        help="Specify the directory of the GenemarkS-T protein-peptides.csv file")
+    parser.add_argument('-t', '--transdecoder', action="store", dest="transdecoder", required=True,
+                        help="Specify the directory of the Transdecoder protein-peptides.csv file")
+    parser.add_argument('-h', '--genemark_decoy', action="store", dest="genemark_decoy", required=True,
+                        help="Specify the directory of the decoy GenemarkS-T protein-peptides.csv file")
+    parser.add_argument('-u', '--transdecoder_decoy', action="store", dest="transdecoder_decoy", required=True,
+                        help="Specify the directory of the decoy Transdecoder protein-peptides.csv file")
+    parser.add_argument('-p', '--prefix', action="store", dest="prefix", default="sample",
+                        help="Provide a prefix for the output csv files")
+    args = parser.parse_args()
 
     try:
         os.makedirs("output/comparison_graphs")
     except FileExistsError:
         pass
 
-    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    decoy_trans_data = extract_csv_data(decoy_trans_file)
-    decoy_genemark_data = extract_csv_data(decoy_genemark_file)
-    real_trans_data = extract_csv_data(real_trans_file)
-    real_genemark_data = extract_csv_data(real_genemark_file)
+    try:
+        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        decoy_trans_data = extract_csv_data(args.transdecoder_decoy)
+        decoy_genemark_data = extract_csv_data(args.genemark_decoy)
+        real_trans_data = extract_csv_data(args.transdecoder)
+        real_genemark_data = extract_csv_data(args.genemark)
 
-    create_venn_diagrams(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, output_prefix)
-    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        create_venn_diagrams(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, args.prefix)
+        print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+    except FileNotFoundError:
+        print(__doc__)
+        print("Please provide valid files")
+        sys.exit(2)
 
 
 if __name__ == '__main__':

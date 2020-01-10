@@ -2,11 +2,9 @@
 """
 A module that checks how many peptides from the PEAKS protein-peptide match results can be found in
 existing protein sequence databases and filters the unknown peptides to a separate file.
-
-Usage: unknown_peptide_seeker.py -c <PEAKS csv file> -d <protein database fasta> -p <output prefix>
 """
+import argparse
 import datetime
-import getopt
 import multiprocessing as mp
 import os
 import sys
@@ -57,29 +55,15 @@ def write_unknown_peptide_data(peptide_data, merged_flag_list, prefix):
 
 def main(argv):
     print(' '.join(argv))
-    print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
-    csv_file = ''
-    database_file = ''
-    output_prefix = ''
-    cpu = os.cpu_count()
-
-    try:
-        opts, args = getopt.getopt(argv[1:], 'c:d:p:', ['csv=', 'database=', 'prefix='])
-    except getopt.GetoptError:
-        print(__doc__)
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt in ('-c', '--csv'):
-            csv_file = arg
-        elif opt in ('-d', '--database'):
-            database_file = arg
-        elif opt in ('-p', '--prefix'):
-            output_prefix = arg
-        else:
-            print(__doc__)
-            sys.exit(2)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-c', '--csv', action="store", dest="csv", required=True,
+                        help="Specify the directory of the protein-peptide.csv file")
+    parser.add_argument('-d', '--database', action="store", dest="database", required=True,
+                        help="Specify the directory of the protein database file")
+    parser.add_argument('-p', '--prefix', action="store", dest="prefix", default="sample",
+                        help="Provide a prefix for the output file: <prefix>_unknown_peptides.csv")
+    args = parser.parse_args()
 
     try:
         os.makedirs("output/unknown_peptides")
@@ -87,23 +71,22 @@ def main(argv):
         pass
 
     try:
-        csv_data = csv_dataframe.extract_csv_data(csv_file)
-        # if database_file.endswith(('fasta', 'fa')):
-        #     with open(database_file, "r") as database:
-        #         flags = search_peptide_db(csv_data, database)
-        # else:
-        #     with gzip.open(database_file, "rt") as database:
-        #         flags = search_peptide_db(csv_data, database)
+        print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+
+        csv_data = csv_dataframe.extract_csv_data(args.csv)
+
+        cpu = os.cpu_count()
         pool = mp.Pool(processes=cpu)
-        results = pool.map(search_peptide_db, [(csv_data, database_file, cpu, i) for i in range(1, cpu + 1)])
+        results = pool.map(search_peptide_db, [(csv_data, args.database, cpu, i) for i in range(1, cpu + 1)])
         pool.close()
         pool.join()
 
         merged_flags = merge_flags(results)
-        write_unknown_peptide_data(csv_data, merged_flags, output_prefix)
+        write_unknown_peptide_data(csv_data, merged_flags, args.prefix)
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError:
         print(__doc__)
+        print("Please provide valid files")
         sys.exit(2)
 
 

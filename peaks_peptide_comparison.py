@@ -4,10 +4,8 @@
 
     usage: peaks_peptide_comparison.py -g <genemark csv file> -t <transdecoder csv file> -p <output prefix>
 """
-
-
+import argparse
 import datetime
-import getopt
 import os
 import sys
 
@@ -36,38 +34,32 @@ def find_distinct_peptides(transdecoder_data, genemark_data, prefix):
 
 def main(argv):
     print(' '.join(argv))
-    genemark_csv = ''
-    transdecoder_csv = ''
-    output_prefix = ''
 
-    try:
-        opts, args = getopt.getopt(argv[1:], 'g:t:p:', ['genemark=', 'transdecoder=', 'prefix='])
-    except getopt.GetoptError:
-        print(__doc__)
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt in ('-g', '--genemark'):
-            genemark_csv = arg
-        elif opt in ('-t', '--transdecoder'):
-            transdecoder_csv = arg
-        elif opt in ('-p', '--prefix'):
-            output_prefix = arg
-        else:
-            print(__doc__)
-            sys.exit(2)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-g', '--genemark', action="store", dest="genemark", required=True,
+                        help="Specify the directory of the GenemarkS-T protein-peptides.csv file")
+    parser.add_argument('-t', '--transdecoder', action="store", dest="transdecoder", required=True,
+                        help="Specify the directory of the Transdecoder protein-peptides.csv file")
+    parser.add_argument('-p', '--prefix', action="store", dest="prefix", default="sample",
+                        help="Provide a prefix for the output csv files")
+    args = parser.parse_args()
 
     try:
         os.makedirs("output/comparison_output")
     except FileExistsError:
         pass
 
-    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    genemark_data = csv_dataframe.extract_csv_data(genemark_csv)
-    transdecoder_data = csv_dataframe.extract_csv_data(transdecoder_csv)
+    try:
+        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        genemark_data = csv_dataframe.extract_csv_data(args.genemark)
+        transdecoder_data = csv_dataframe.extract_csv_data(args.transdecoder)
 
-    find_distinct_peptides(transdecoder_data, genemark_data, output_prefix)
-    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        find_distinct_peptides(transdecoder_data, genemark_data, args.prefix)
+        print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+    except FileNotFoundError:
+        print(__doc__)
+        print("Please provide valid files")
+        sys.exit(2)
 
 
 if __name__ == '__main__':

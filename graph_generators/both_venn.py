@@ -62,8 +62,8 @@ def main(argv):
         create_venn_diagrams(left_data, right_data, args.suffix, args.left_name, args.right_name)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
-        print(e)
         print(__doc__)
+        print("Please provide valid files")
 
         sys.exit(2)
 

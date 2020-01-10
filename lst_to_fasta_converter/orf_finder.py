@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 """short python module to extract ORFs found with GeneMarkS-T from the RNA transcripts assembled by Trinity.
-usage: orf_finder.py -g <genemarkfile> -t <transcriptfile>
 """
 
-
+import argparse
 import datetime
-import getopt
 import os
 import sys
 
@@ -52,7 +50,7 @@ def reverse_complement(sequence):
     return new_sequence
 
 
-def write_ORFs(gene_id, sequence, start, stop, strand):
+def write_orfs(gene_id, sequence, start, stop, strand):
     """Writes ORFs to new file in current directory"""
     with open("../output/Trinity.fasta.genemark.cds", "a+") as new_file:
         new_file.write(">" + gene_id + ":" + str(start+1) + "-" + str(stop) + "(" + strand + ")\n")
@@ -83,34 +81,38 @@ def parse_genemark(gm_file, trans_file):
                         if strand == "-":
                             sequence = reverse_complement(sequence)
                         sequence = insert_newlines(sequence)
-                        write_ORFs(gene_id, sequence,start_pos, stop_pos, strand)
+                        write_orfs(gene_id, sequence, start_pos, stop_pos, strand)
 
                 except IndexError:
                     pass
 
 
 def main(argv):
-    if os.path.exists("../output/Trinity.fasta.genemark.cds"):
-        os.remove("../output/Trinity.fasta.genemark.cds")
-    genemark_file = ''
-    transcript_file = ''
+    print(' '.join(argv))
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-g', '--genemark', action="store", dest="genemark", required=True,
+                        help="Specify the directory of the GenemarkS-T protein-peptides.csv file")
+    parser.add_argument('-t', '--transcript', action="store", dest="transcript", required=True,
+                        help="Specify the directory of the Trinity RNA transcript fasta file")
+    args = parser.parse_args()
+
     try:
-        opts, args = getopt.getopt(argv, 'g:t:', ['genemark=', 'transcript='])
-    except getopt.GetoptError:
-        print("usage: orf_finder.py -g <genemarkfile> -t <transcriptfile>")
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ('-g', '--genemark'):
-            genemark_file = arg
-        elif opt in ('-t', '--transcript'):
-            transcript_file = arg
-        else:
-            print("usage: orf_finder.py -g <genemarkfile> -t <transcriptfile>")
-            sys.exit(2)
-    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    parse_genemark(genemark_file, transcript_file)
-    print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        os.makedirs("output")
+    except FileExistsError:
+        pass
+
+    if os.path.exists("output/Trinity.fasta.genemark.cds"):
+        os.remove("output/Trinity.fasta.genemark.cds")
+
+    try:
+        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        parse_genemark(args.genemark, args.transcript)
+        print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+    except FileNotFoundError:
+        print(__doc__)
+        print("Please provide valid files")
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv)
