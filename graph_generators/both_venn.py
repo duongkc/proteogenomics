@@ -1,14 +1,10 @@
 #!/usr/bin/python3
 """
-Creates venn diagrams in one image, but only for comparing GenemarkS-T with Transdecoder csv files, and not
-the decoy files.
-
-Usage:
-
+Creates venn diagrams in one image, by comparing PEAKS protein-peptide.csv files or any csv file using that format.
 """
 
+import argparse
 import datetime
-import getopt
 import os
 import sys
 
@@ -18,59 +14,52 @@ from matplotlib_venn import venn2
 import csv_dataframe
 
 
-def create_venn_diagrams(genemark, transdecoder, prefix):
+def create_venn_diagrams(left, right, suffix, left_name, right_name):
     """Creates venn diagrams from the unique peptide lists of each file"""
 
-    set_td = set(transdecoder.Peptide)
-    set_gm = set(genemark.Peptide)
+    set_left = set(left.Peptide)
+    set_right = set(right.Peptide)
 
     fig, axes = plt.subplots(nrows=1, ncols=2)
-    v1 = venn2([set_td, set_gm], set_labels=('Sample 1', 'Sample 2'), ax=axes[0])
+    v1 = venn2([set_left, set_right], set_labels=(left_name, right_name), ax=axes[0])
 
-    total_v2 = len(set_td.union(set_gm))
-    v2 = venn2([set_td, set_gm], set_labels=('Sample 1', 'Sample 2'), ax=axes[1],
+    total_v2 = len(set_left.union(set_right))
+    v2 = venn2([set_left, set_right], set_labels=(left_name, right_name), ax=axes[1],
                subset_label_formatter=lambda x: f"{(x/total_v2):.2%}")
 
-    plt.suptitle('Comparing Sample {} peptide matches'.format(prefix))
+    plt.suptitle('Comparing {} peptide matches'.format(suffix))
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
-    plt.savefig('output/comparison_graphs/venn_sample_{}.png'.format(prefix))
+    plt.savefig('output/comparison_graphs/venn_{}.png'.format(suffix))
 
 
 def main(argv):
     print(' '.join(argv))
-    genemark_file = ''
-    trans_file = ''
-    output_prefix = ''
 
-    try:
-        opts, args = getopt.getopt(argv[1:], 'g:t:p:', ['genemark=', 'transdecoder=', 'prefix='])
-    except (getopt.GetoptError, FileNotFoundError) as e:
-        print(__doc__)
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt in ('-g', '--genemark'):
-            genemark_file = arg
-        elif opt in ('-t', '--transdecoder'):
-            trans_file = arg
-        elif opt in ('-p', '--prefix'):
-            output_prefix = arg
-        else:
-            print(__doc__)
-            sys.exit(2)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-l', '--left', action="store", dest="left",
+                        help="Specify directory of the first sample .csv", required=True)
+    parser.add_argument('-r', '--right', action="store", dest="right",
+                        help="Specify directory of the second sample .csv", required=True)
+    parser.add_argument('-s', '--suffix', action="store", dest="suffix", default="peptides",
+                        help="Give the output file a custom name: venn_<suffix>.png")
+    parser.add_argument('--left_name', action="store", dest="left_name", default="sample left",
+                        help="Name the left sample")
+    parser.add_argument('--right_name', action="store", dest="right_name", default="sample right",
+                        help="Name the right sample")
+    args = parser.parse_args()
 
     try:
         os.makedirs("output/comparison_graphs")
     except FileExistsError:
         pass
 
-    print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     try:
-        trans_data = csv_dataframe.extract_csv_data(trans_file)
-        genemark_data = csv_dataframe.extract_csv_data(genemark_file)
+        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        left_data = csv_dataframe.extract_csv_data(args.left)
+        right_data = csv_dataframe.extract_csv_data(args.right)
 
-        create_venn_diagrams(genemark_data, trans_data, output_prefix)
+        create_venn_diagrams(left_data, right_data, args.suffix, args.left_name, args.right_name)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
         print(e)
