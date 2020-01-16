@@ -50,7 +50,7 @@ def main(argv):
     args = parser.parse_args()
 
     try:
-        os.makedirs("output/comparison_graphs")
+        os.makedirs("graph_generators/output/comparison_graphs")
     except FileExistsError:
         pass
 
