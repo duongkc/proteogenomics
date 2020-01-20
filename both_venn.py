@@ -37,15 +37,15 @@ def main(argv):
     print(' '.join(argv))
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-l', '--left', action="store", dest="left",
+    parser.add_argument('-l', '--left', action='store', dest="left",
                         help="Specify directory of the first sample .csv", required=True)
-    parser.add_argument('-r', '--right', action="store", dest="right",
+    parser.add_argument('-r', '--right', action='store', dest="right",
                         help="Specify directory of the second sample .csv", required=True)
-    parser.add_argument('-s', '--suffix', action="store", dest="suffix", default="peptides",
+    parser.add_argument('-s', '--suffix', action='store', dest="suffix", default="peptides",
                         help="Give the output file a custom name: venn_<suffix>.png")
-    parser.add_argument('--left_name', action="store", dest="left_name", default="sample left",
+    parser.add_argument('--left_name', action='store', dest="left_name", default="sample left",
                         help="Name the left sample")
-    parser.add_argument('--right_name', action="store", dest="right_name", default="sample right",
+    parser.add_argument('--right_name', action='store', dest="right_name", default="sample right",
                         help="Name the right sample")
     args = parser.parse_args()
 

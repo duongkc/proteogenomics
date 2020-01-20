@@ -57,11 +57,11 @@ def main(argv):
     print(' '.join(argv))
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-c', '--csv', action="store", dest="csv", required=True,
+    parser.add_argument('-c', '--csv', action='store', dest="csv", required=True,
                         help="Specify the directory of the protein-peptide.csv file")
-    parser.add_argument('-d', '--database', action="store", dest="database", required=True,
+    parser.add_argument('-d', '--database', action='store', dest="database", required=True,
                         help="Specify the directory of the protein database file")
-    parser.add_argument('-p', '--prefix', action="store", dest="prefix", default="sample",
+    parser.add_argument('-p', '--prefix', action='store', dest="prefix", default="sample",
                         help="Provide a prefix for the output file: <prefix>_unknown_peptides.csv")
     args = parser.parse_args()
 
