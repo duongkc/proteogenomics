@@ -28,7 +28,8 @@ def count_peptide_frequency(peptide_data, column_name):
     return count
 
 
-def create_counter_dataframe(lefts, rights):
+def create_counter_dataframe(lefts, rights, prefix):
+    output_file = "output/{}_peptide_frequency.csv".format(prefix)
     all_pep = lefts.append(rights, ignore_index=True).drop_duplicates(subset=['Peptide'], keep='first') \
         .reset_index(drop=True)
     left_count = count_peptide_frequency(lefts, 'left_count')
@@ -37,7 +38,7 @@ def create_counter_dataframe(lefts, rights):
     merged = pd.merge(all_pep, left_count, on='Peptide', how='outer').fillna(0, downcast='infer')
     merged = pd.merge(merged, right_count, on='Peptide', how='outer').fillna(0, downcast='infer')
 
-    with open("output/test1_rank.csv", "w+") as output_file:
+    with open(output_file, "w+") as output_file:
         merged.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
 
     return merged
@@ -79,13 +80,13 @@ def main(argv):
         if args.batch:
             left_data = join_dataframes(args.left)
             right_data = join_dataframes(args.right)
-            merged_data = create_counter_dataframe(left_data, right_data)
+            merged_data = create_counter_dataframe(left_data, right_data, args.prefix)
             # mann_whitney_u_test(merged_data)
             wilcoxon_test(merged_data)
         else:
             left_data = csv_dataframe.extract_csv_data(args.left)
             right_data = csv_dataframe.extract_csv_data(args.right)
-            merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']])
+            merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']], args.prefix)
             # mann_whitney_u_test(merged_data)
             wilcoxon_test(merged_data)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
