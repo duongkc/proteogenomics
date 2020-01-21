@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 """
-doc
+A python module that counts and compares peptide frequency between two groups. Results can be found in a separate
+output file.
+A Mann-Whitney U test will also be performed with these results, with the results shown in the terminal.
+If specified, a Wilcoxon signed-rank test will be performed instead.
 """
 import argparse
 import datetime
