@@ -73,6 +73,9 @@ def main(argv):
                         help="Name the left sample")
     parser.add_argument('--right_name', action='store', dest="right_name", default="right",
                         help="Name the right sample")
+    parser.add_argument('-w', '--wilcoxon', action='store_true', dest="wilcoxon",
+                        help="Will perform a Wilcoxon signed-rank test instead of a Mann-Whitney U test if this"
+                             "argument is provided.")
     args = parser.parse_args()
 
     try:
@@ -81,14 +84,19 @@ def main(argv):
             left_data = join_dataframes(args.left)
             right_data = join_dataframes(args.right)
             merged_data = create_counter_dataframe(left_data, right_data, args.prefix)
-            # mann_whitney_u_test(merged_data)
-            wilcoxon_test(merged_data)
+            if args.wilcoxon:
+                wilcoxon_test(merged_data)
+            else:
+                mann_whitney_u_test(merged_data)
+
         else:
             left_data = csv_dataframe.extract_csv_data(args.left)
             right_data = csv_dataframe.extract_csv_data(args.right)
             merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']], args.prefix)
-            # mann_whitney_u_test(merged_data)
-            wilcoxon_test(merged_data)
+            if args.wilcoxon:
+                wilcoxon_test(merged_data)
+            else:
+                mann_whitney_u_test(merged_data)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError:
         print(__doc__)
