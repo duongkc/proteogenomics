@@ -9,6 +9,7 @@ import sys
 
 import pandas as pd
 import scipy.stats as stats
+import numpy as np
 
 import csv_dataframe
 
@@ -37,6 +38,8 @@ def create_counter_dataframe(lefts, rights, prefix):
 
     merged = pd.merge(all_pep, left_count, on='Peptide', how='outer').fillna(0, downcast='infer')
     merged = pd.merge(merged, right_count, on='Peptide', how='outer').fillna(0, downcast='infer')
+    merged['abs'] = np.abs(merged['left_count'] - merged['right_count'])
+    merged = merged.sort_values(by=['abs'], ascending=False)
 
     with open(output_file, "w+") as output_file:
         merged.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
