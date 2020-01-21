@@ -7,18 +7,37 @@ import datetime
 import os
 import sys
 
-import pandas
+import pandas as pd
 
 import csv_dataframe
 
 
 def join_dataframes(data):
-    joined_dataframe = pandas.DataFrame()
+    joined_dataframe = pd.DataFrame()
     with open(data, "r") as file_list:
         for file in file_list:
             csv_data = csv_dataframe.extract_csv_data(file.strip())
             joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index = True)
     return joined_dataframe
+
+
+def count_peptide_frequency(peptide_data, column_name):
+    count = pd.DataFrame(peptide_data['Peptide'].value_counts().reset_index())
+    count.columns = ['Peptide', column_name]
+    return count
+
+
+def create_counter_dataframe(lefts, rights):
+    all_pep = lefts.append(rights, ignore_index=True).drop_duplicates(subset=['Peptide'], keep='first') \
+        .reset_index(drop=True)
+    left_count = count_peptide_frequency(lefts, 'left_count')
+    right_count = count_peptide_frequency(rights, 'right_count')
+
+    merged = pd.merge(all_pep, left_count, on='Peptide', how='outer').fillna(0, downcast='infer')
+    merged = pd.merge(merged, right_count, on='Peptide', how='outer').fillna(0, downcast='infer')
+
+    with open("output/test1_rank.csv", "w+") as output_file:
+        merged.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
 
 
 def main(argv):
@@ -41,12 +60,9 @@ def main(argv):
     args = parser.parse_args()
 
     if args.batch:
-        lefts = join_dataframes(args.left)
-        rights = join_dataframes(args.right)
-        print(lefts['Peptide'].value_counts())
-        # print(type(rights['Peptide'].value_counts()))
-        with open("output/test_rank.csv", "w+") as output_file:
-            lefts.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
+        left_data = join_dataframes(args.left)
+        right_data = join_dataframes(args.right)
+        create_counter_dataframe(left_data, right_data)
 
 
 if __name__ == '__main__':
