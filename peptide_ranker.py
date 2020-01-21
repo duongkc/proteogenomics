@@ -44,8 +44,14 @@ def create_counter_dataframe(lefts, rights):
 
 
 def mann_whitney_u_test(merged_data):
-    u_statistic, p_value = stats.mannwhitneyu(merged_data.left_count, merged_data.right_count)
+    u_statistic, p_value = stats.mannwhitneyu(merged_data.left_count, merged_data.right_count, alternative='two-sided')
     print('U-Statistic: ', u_statistic)
+    print('p-value: ', p_value)
+
+
+def wilcoxon_test(merged_data):
+    w_statistic, p_value = stats.wilcoxon(merged_data.left_count, merged_data.right_count, alternative='two-sided')
+    print('U-Statistic: ', w_statistic)
     print('p-value: ', p_value)
 
 
@@ -72,8 +78,8 @@ def main(argv):
         left_data = join_dataframes(args.left)
         right_data = join_dataframes(args.right)
         merged_data = create_counter_dataframe(left_data, right_data)
-        mann_whitney_u_test(merged_data)
-
+        # mann_whitney_u_test(merged_data)
+        wilcoxon_test(merged_data)
 
 if __name__ == '__main__':
     main(sys.argv)
