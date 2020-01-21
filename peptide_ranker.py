@@ -8,6 +8,7 @@ import os
 import sys
 
 import pandas as pd
+import scipy.stats as stats
 
 import csv_dataframe
 
@@ -39,6 +40,14 @@ def create_counter_dataframe(lefts, rights):
     with open("output/test1_rank.csv", "w+") as output_file:
         merged.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
 
+    return merged
+
+
+def mann_whitney_u_test(merged_data):
+    u_statistic, p_value = stats.mannwhitneyu(merged_data.left_count, merged_data.right_count)
+    print('U-Statistic: ', u_statistic)
+    print('p-value: ', p_value)
+
 
 def main(argv):
     print(' '.join(argv))
@@ -62,7 +71,8 @@ def main(argv):
     if args.batch:
         left_data = join_dataframes(args.left)
         right_data = join_dataframes(args.right)
-        create_counter_dataframe(left_data, right_data)
+        merged_data = create_counter_dataframe(left_data, right_data)
+        mann_whitney_u_test(merged_data)
 
 
 if __name__ == '__main__':
