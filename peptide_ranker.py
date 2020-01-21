@@ -18,7 +18,7 @@ def join_dataframes(data):
     with open(data, "r") as file_list:
         for file in file_list:
             csv_data = csv_dataframe.extract_csv_data(file.strip())
-            joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index = True)
+            joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)
     return joined_dataframe
 
 
@@ -74,12 +74,26 @@ def main(argv):
                         help="Name the right sample")
     args = parser.parse_args()
 
-    if args.batch:
-        left_data = join_dataframes(args.left)
-        right_data = join_dataframes(args.right)
-        merged_data = create_counter_dataframe(left_data, right_data)
-        # mann_whitney_u_test(merged_data)
-        wilcoxon_test(merged_data)
+    try:
+        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        if args.batch:
+            left_data = join_dataframes(args.left)
+            right_data = join_dataframes(args.right)
+            merged_data = create_counter_dataframe(left_data, right_data)
+            # mann_whitney_u_test(merged_data)
+            wilcoxon_test(merged_data)
+        else:
+            left_data = csv_dataframe.extract_csv_data(args.left)
+            right_data = csv_dataframe.extract_csv_data(args.right)
+            merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']])
+            # mann_whitney_u_test(merged_data)
+            wilcoxon_test(merged_data)
+        print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+    except FileNotFoundError:
+        print(__doc__)
+        print("Please provide valid files")
+        sys.exit(2)
+
 
 if __name__ == '__main__':
     main(sys.argv)
