@@ -39,7 +39,7 @@ def create_counter_dataframe(lefts, rights, prefix):
     left_count = count_peptide_frequency(lefts, 'left_count')
     right_count = count_peptide_frequency(rights, 'right_count')
 
-    merged = pd.merge(all_pep, left_count, on='Peptide', how='outer').fillna(0, downcast='infer')
+    merged = pd.merge(all_pep, left_count, on='Peptide', how='outer')
     merged = pd.merge(merged, right_count, on='Peptide', how='outer').fillna(0, downcast='infer')
     merged['abs'] = np.abs(merged['left_count'] - merged['right_count'])
     merged = merged.sort_values(by=['abs'], ascending=False)
