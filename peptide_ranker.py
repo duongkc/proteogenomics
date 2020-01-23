@@ -21,7 +21,7 @@ def join_dataframes(data):
     joined_dataframe = pd.DataFrame()
     with open(data, "r") as file_list:
         for file in file_list:
-            csv_data = csv_dataframe.extract_csv_data(file.strip())
+            csv_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
             joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)
     return joined_dataframe
 
@@ -96,8 +96,8 @@ def main(argv):
                 mann_whitney_u_test(merged_data)
 
         else:
-            left_data = csv_dataframe.extract_csv_data(args.left)
-            right_data = csv_dataframe.extract_csv_data(args.right)
+            left_data = csv_dataframe.extract_csv_data(args.left, False)
+            right_data = csv_dataframe.extract_csv_data(args.right, False)
             merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']], args.prefix)
             if args.wilcoxon:
                 wilcoxon_test(merged_data)

@@ -66,10 +66,10 @@ def main(argv):
 
     try:
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-        decoy_trans_data = csv_dataframe.extract_csv_data(args.transdecoder_decoy)
-        decoy_genemark_data = csv_dataframe.extract_csv_data(args.genemark_decoy)
-        real_trans_data = csv_dataframe.extract_csv_data(args.transdecoder)
-        real_genemark_data = csv_dataframe.extract_csv_data(args.genemark)
+        decoy_trans_data = csv_dataframe.extract_csv_data(args.transdecoder_decoy, drop_dupes=True)
+        decoy_genemark_data = csv_dataframe.extract_csv_data(args.genemark_decoy, drop_dupes=True)
+        real_trans_data = csv_dataframe.extract_csv_data(args.transdecoder, drop_dupes=True)
+        real_genemark_data = csv_dataframe.extract_csv_data(args.genemark, drop_dupes=True)
 
         create_venn_diagrams(decoy_trans_data, decoy_genemark_data, real_trans_data, real_genemark_data, args.prefix)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))

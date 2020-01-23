@@ -56,8 +56,8 @@ def main(argv):
 
     try:
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-        left_data = csv_dataframe.extract_csv_data(args.left)
-        right_data = csv_dataframe.extract_csv_data(args.right)
+        left_data = csv_dataframe.extract_csv_data(args.left, drop_dupes=True)
+        right_data = csv_dataframe.extract_csv_data(args.right, drop_dupes=True)
 
         create_venn_diagrams(left_data, right_data, args.suffix, args.left_name, args.right_name)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))

@@ -73,7 +73,7 @@ def main(argv):
     try:
         print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
-        csv_data = csv_dataframe.extract_csv_data(args.csv)
+        csv_data = csv_dataframe.extract_csv_data(args.csv, drop_dupes=True)
 
         cpu = os.cpu_count()
         pool = mp.Pool(processes=cpu)
