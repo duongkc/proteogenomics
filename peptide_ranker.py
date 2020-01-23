@@ -65,13 +65,12 @@ def wilcoxon_test(merged_data):
 def main(argv):
     print(' '.join(argv))
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-b', '--batch', action='store_true', dest="batch",
-                        help="Include this argument if the left and right csv files are specified in a batch txt file")
+
     parser.add_argument('-l', '--left', action='store', dest="left",
-                        help="Specify the directory of the first protein-peptides.csv file or batch .txt"
+                        help="Specify the .txt file containing the first group of peptide .csv file paths"
                              "containing paths to them", required=True)
     parser.add_argument('-r', '--right', action='store', dest="right",
-                        help="Specify the directory of the second protein-peptides.csv file or batch .txt"
+                        help="Specify the .txt file containing the second group of peptide .csv file paths"
                              "containing paths to them", required=True)
     parser.add_argument('-p', '--prefix', action='store', dest="prefix", default="sample",
                         help="Provide a prefix for the output csv files")
@@ -86,23 +85,24 @@ def main(argv):
 
     try:
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-        if args.batch:
-            left_data = join_dataframes(args.left)
-            right_data = join_dataframes(args.right)
-            merged_data = create_counter_dataframe(left_data, right_data, args.prefix)
-            if args.wilcoxon:
-                wilcoxon_test(merged_data)
-            else:
-                mann_whitney_u_test(merged_data)
 
-        else:
-            left_data = csv_dataframe.extract_csv_data(args.left, False)
-            right_data = csv_dataframe.extract_csv_data(args.right, False)
-            merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']], args.prefix)
-            if args.wilcoxon:
-                wilcoxon_test(merged_data)
-            else:
-                mann_whitney_u_test(merged_data)
+        # if args.batch:
+        #     left_data = join_dataframes(args.left)
+        #     right_data = join_dataframes(args.right)
+        #     merged_data = create_counter_dataframe(left_data, right_data, args.prefix)
+        #     if args.wilcoxon:
+        #         wilcoxon_test(merged_data)
+        #     else:
+        #         mann_whitney_u_test(merged_data)
+        #
+        # else:
+        #     left_data = csv_dataframe.extract_csv_data(args.left, False)
+        #     right_data = csv_dataframe.extract_csv_data(args.right, False)
+        #     merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']], args.prefix)
+        #     if args.wilcoxon:
+        #         wilcoxon_test(merged_data)
+        #     else:
+        #         mann_whitney_u_test(merged_data)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError:
         print(__doc__)
