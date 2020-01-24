@@ -68,19 +68,18 @@ def create_counter_dataframe(files, group_name, prefix):
     return all_peptides
 
 
-def mann_whitney_u_test(left_data, right_data):
+def mann_whitney_u_test(left_data, right_data, prefix):
     peptides = left_data[['Peptide']].copy()
     for i, row in left_data.iterrows():
-        left = left_data.iloc[i, 1:]
-        right = right_data.iloc[i, 1:]
-        if all(sample == left[0] for sample in left):
-            if all(sample == right[0] for sample in right):
-                continue
+        left = left_data.iloc[i, 1:].tolist()
+        right = right_data.iloc[i, 1:].tolist()
+        if all(sample == left[0] for sample in left + right):
+            continue
         u_statistic, p_value = stats.mannwhitneyu(left, right, alternative='two-sided')
         peptides.at[i, 'p-value'] = p_value
         peptides.at[i, 'u-statistic'] = u_statistic
     peptides = peptides.sort_values(by=['p-value'], ascending=True)
-    with open("output/mann_peptides.csv", "w+") as output:
+    with open("output/{}_mann_peptides.csv".format(prefix), "w+") as output:
         peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
 
 
@@ -115,7 +114,7 @@ def main(argv):
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         left_data = create_counter_dataframe(args.left, args.left_name, args.prefix)
         right_data = create_counter_dataframe(args.right, args.right_name, args.prefix)
-        mann_whitney_u_test(left_data, right_data)
+        mann_whitney_u_test(left_data, right_data, args.prefix)
         # if args.batch:
         #     left_data = join_dataframes(args.left)
         #     right_data = join_dataframes(args.right)
