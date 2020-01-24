@@ -50,15 +50,14 @@ def parts_per_million(data):
 
 def create_counter_dataframe(files, group_name, prefix):
     output_file = "output/{}_peptide_frequency_{}.csv".format(prefix, group_name)
-    all_peptides = pd.read_csv("output/all_peptides_gm.csv", header='infer', delimiter=',', index_col=0)
+    all_peptides = pd.read_csv("output/all_peptides_td.csv", header='infer', delimiter=',', index_col=0)
     with open(files, "r") as file_list:
         for num, file in enumerate(file_list):
             file_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
-            counter_column = count_peptide_frequency(file_data, "S{}".format(num + 1))
+            counter_column = count_peptide_frequency(file_data, "{}{}".format(group_name[0].capitalize(), num + 1))
             all_peptides = pd.merge(all_peptides, counter_column, on='Peptide', how='outer')
 
     all_peptides = all_peptides.fillna(0, downcast='infer')
-    # print(all_peptides.iloc[0, 1:])
     for column in all_peptides.columns[1:]:
         all_peptides[column] = parts_per_million(all_peptides[column])
     # merged['abs'] = np.abs(merged['left_count'] - merged['right_count'])
@@ -69,15 +68,22 @@ def create_counter_dataframe(files, group_name, prefix):
     return all_peptides
 
 
-def mann_whitney_u_test(merged_data):
-    u_statistic, p_value = stats.mannwhitneyu(merged_data.left_count, merged_data.right_count, alternative='two-sided')
-    print('U-Statistic: ', u_statistic)
-    print('p-value: ', p_value)
+def mann_whitney_u_test(left_data, right_data):
+    peptides = left_data[['Peptide']].copy()
+    for i, row in left_data.iterrows():
+        left = left_data.iloc[i, 1:]
+        right = right_data.iloc[i, 1:]
+        u_statistic, p_value = stats.mannwhitneyu(left, right, alternative='two-sided')
+        peptides.at[i, 'p-value'] = p_value
+        peptides.at[i, 'u-stat'] = u_statistic
+    # peptides = peptides.sort_values(by=['p-value'], ascending=True)
+    with open("output/mann_peptides.csv", "w+") as output:
+        peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
 
 
 def wilcoxon_test(merged_data):
     w_statistic, p_value = stats.wilcoxon(merged_data.left_count, merged_data.right_count, alternative='two-sided')
-    print('U-Statistic: ', w_statistic)
+    print('W-Statistic: ', w_statistic)
     print('p-value: ', p_value)
 
 
@@ -106,7 +112,7 @@ def main(argv):
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         left_data = create_counter_dataframe(args.left, args.left_name, args.prefix)
         right_data = create_counter_dataframe(args.right, args.right_name, args.prefix)
-        
+        mann_whitney_u_test(left_data, right_data)
         # if args.batch:
         #     left_data = join_dataframes(args.left)
         #     right_data = join_dataframes(args.right)
