@@ -30,7 +30,7 @@ def create_peptide_list(left_file, right_file):
     """Creates a list of all peptides as a DataFrame column"""
     joined_left = join_dataframes(left_file)
     joined_right = join_dataframes(right_file)
-    all_peptides = joined_left.append(joined_right, ignore_index=True)\
+    all_peptides = joined_left.append(joined_right, ignore_index=True) \
         .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
     with open("output/all_peptides_gm.csv", "w+") as output:
         all_peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
@@ -42,22 +42,31 @@ def count_peptide_frequency(peptide_data, column_name):
     return count
 
 
-def create_counter_dataframe(lefts, rights, prefix):
-    output_file = "output/{}_peptide_frequency.csv".format(prefix)
-    all_pep = lefts.append(rights, ignore_index=True).drop_duplicates(subset=['Peptide'], keep='first') \
-        .reset_index(drop=True)
-    left_count = count_peptide_frequency(lefts, 'left_count')
-    right_count = count_peptide_frequency(rights, 'right_count')
+def parts_per_million(data):
+    data_sum = data.sum()
+    ppm = data / data_sum * 1000000
+    return ppm
 
-    merged = pd.merge(all_pep, left_count, on='Peptide', how='outer')
-    merged = pd.merge(merged, right_count, on='Peptide', how='outer').fillna(0, downcast='infer')
-    merged['abs'] = np.abs(merged['left_count'] - merged['right_count'])
-    merged = merged.sort_values(by=['abs'], ascending=False)
 
+def create_counter_dataframe(files, group_name, prefix):
+    output_file = "output/{}_peptide_frequency_{}.csv".format(prefix, group_name)
+    all_peptides = pd.read_csv("output/all_peptides_gm.csv", header='infer', delimiter=',', index_col=0)
+    with open(files, "r") as file_list:
+        for num, file in enumerate(file_list):
+            file_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
+            counter_column = count_peptide_frequency(file_data, "S{}".format(num + 1))
+            all_peptides = pd.merge(all_peptides, counter_column, on='Peptide', how='outer')
+
+    all_peptides = all_peptides.fillna(0, downcast='infer')
+    # print(all_peptides.iloc[0, 1:])
+    for column in all_peptides.columns[1:]:
+        all_peptides[column] = parts_per_million(all_peptides[column])
+    # merged['abs'] = np.abs(merged['left_count'] - merged['right_count'])
+    # merged = merged.sort_values(by=['abs'], ascending=False)
+    #
     with open(output_file, "w+") as output_file:
-        merged.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
-
-    return merged
+        all_peptides.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
+    return all_peptides
 
 
 def mann_whitney_u_test(merged_data):
@@ -95,7 +104,9 @@ def main(argv):
 
     try:
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-        create_peptide_list(args.left, args.right)
+        left_data = create_counter_dataframe(args.left, args.left_name, args.prefix)
+        right_data = create_counter_dataframe(args.right, args.right_name, args.prefix)
+        
         # if args.batch:
         #     left_data = join_dataframes(args.left)
         #     right_data = join_dataframes(args.right)
