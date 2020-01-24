@@ -50,7 +50,7 @@ def parts_per_million(data):
 
 def create_counter_dataframe(files, group_name, prefix):
     output_file = "output/{}_peptide_frequency_{}.csv".format(prefix, group_name)
-    all_peptides = pd.read_csv("output/all_peptides_td.csv", header='infer', delimiter=',', index_col=0)
+    all_peptides = pd.read_csv("output/all_peptides_gm.csv", header='infer', delimiter=',', index_col=0)
     with open(files, "r") as file_list:
         for num, file in enumerate(file_list):
             file_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
@@ -73,10 +73,13 @@ def mann_whitney_u_test(left_data, right_data):
     for i, row in left_data.iterrows():
         left = left_data.iloc[i, 1:]
         right = right_data.iloc[i, 1:]
+        if all(sample == left[0] for sample in left):
+            if all(sample == right[0] for sample in right):
+                continue
         u_statistic, p_value = stats.mannwhitneyu(left, right, alternative='two-sided')
         peptides.at[i, 'p-value'] = p_value
-        peptides.at[i, 'u-stat'] = u_statistic
-    # peptides = peptides.sort_values(by=['p-value'], ascending=True)
+        peptides.at[i, 'u-statistic'] = u_statistic
+    peptides = peptides.sort_values(by=['p-value'], ascending=True)
     with open("output/mann_peptides.csv", "w+") as output:
         peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
 
@@ -117,15 +120,6 @@ def main(argv):
         #     left_data = join_dataframes(args.left)
         #     right_data = join_dataframes(args.right)
         #     merged_data = create_counter_dataframe(left_data, right_data, args.prefix)
-        #     if args.wilcoxon:
-        #         wilcoxon_test(merged_data)
-        #     else:
-        #         mann_whitney_u_test(merged_data)
-        #
-        # else:
-        #     left_data = csv_dataframe.extract_csv_data(args.left, False)
-        #     right_data = csv_dataframe.extract_csv_data(args.right, False)
-        #     merged_data = create_counter_dataframe(left_data[['Peptide']], right_data[['Peptide']], args.prefix)
         #     if args.wilcoxon:
         #         wilcoxon_test(merged_data)
         #     else:
