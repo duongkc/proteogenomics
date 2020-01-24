@@ -21,9 +21,19 @@ def join_dataframes(data):
     joined_dataframe = pd.DataFrame()
     with open(data, "r") as file_list:
         for file in file_list:
-            csv_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
+            csv_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=True)
             joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)
     return joined_dataframe
+
+
+def create_peptide_list(left_file, right_file):
+    """Creates a list of all peptides as a DataFrame column"""
+    joined_left = join_dataframes(left_file)
+    joined_right = join_dataframes(right_file)
+    all_peptides = joined_left.append(joined_right, ignore_index=True)\
+        .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
+    with open("output/all_peptides_gm.csv", "w+") as output:
+        all_peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
 
 
 def count_peptide_frequency(peptide_data, column_name):
@@ -85,7 +95,7 @@ def main(argv):
 
     try:
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-
+        create_peptide_list(args.left, args.right)
         # if args.batch:
         #     left_data = join_dataframes(args.left)
         #     right_data = join_dataframes(args.right)
@@ -104,9 +114,10 @@ def main(argv):
         #     else:
         #         mann_whitney_u_test(merged_data)
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         print(__doc__)
-        print("Please provide valid files")
+        print("Please provide valid files:")
+        print(e)
         sys.exit(2)
 
 
