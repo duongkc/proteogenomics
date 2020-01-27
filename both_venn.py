@@ -22,15 +22,43 @@ def create_venn_diagrams(left, right, suffix, left_name, right_name):
 
     fig, axes = plt.subplots(nrows=1, ncols=2)
     v1 = venn2([set_left, set_right], set_labels=(left_name, right_name), ax=axes[0])
+    for text in v1.set_labels:
+        text.set_color('w')
+    v1.get_label_by_id('10').set_color('w')
+    v1.get_label_by_id('01').set_color('w')
+    v1.get_label_by_id('11').set_color('w')
+    v1.get_patch_by_id('10').set_color('#3AFFCE')
+    v1.get_patch_by_id('10').set_edgecolor('none')
+    v1.get_patch_by_id('10').set_alpha(0.8)
+    v1.get_patch_by_id('01').set_color('#EADB31')
+    v1.get_patch_by_id('01').set_edgecolor('none')
+    v1.get_patch_by_id('01').set_alpha(0.8)
+    v1.get_patch_by_id('11').set_color('#85CA00')
+    v1.get_patch_by_id('11').set_edgecolor('none')
+    v1.get_patch_by_id('11').set_alpha(0.8)
 
     total_v2 = len(set_left.union(set_right))
     v2 = venn2([set_left, set_right], set_labels=(left_name, right_name), ax=axes[1],
                subset_label_formatter=lambda x: f"{(x/total_v2):.2%}")
+    for text in v2.set_labels:
+        text.set_color('w')
+    v2.get_label_by_id('10').set_color('w')
+    v2.get_label_by_id('01').set_color('w')
+    v2.get_label_by_id('11').set_color('w')
+    v2.get_patch_by_id('10').set_color('#239C7E')
+    v2.get_patch_by_id('10').set_edgecolor('none')
+    v2.get_patch_by_id('10').set_alpha(0.8)
+    v2.get_patch_by_id('01').set_color('#D5A300')
+    v2.get_patch_by_id('01').set_edgecolor('none')
+    v2.get_patch_by_id('01').set_alpha(0.8)
+    v2.get_patch_by_id('11').set_color('#77B700')
+    v2.get_patch_by_id('11').set_edgecolor('none')
+    v2.get_patch_by_id('11').set_alpha(0.8)
 
-    plt.suptitle('Comparing {} peptide matches'.format(suffix))
+    plt.suptitle('Comparing {} peptide matches'.format(suffix), color='w')
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
-    plt.savefig('output/comparison_graphs/venn_{}.png'.format(suffix))
+    plt.savefig('output/comparison_graphs/venn_{}.png'.format(suffix), transparent=True)
 
 
 def main(argv):
