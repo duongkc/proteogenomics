@@ -41,5 +41,14 @@ def create_peptide_list(left_file, right_file):
     joined_right = join_dataframes(right_file)
     all_peptides = joined_left.append(joined_right, ignore_index=True) \
         .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
-    with open("output/all_peptides_gm.csv", "w+") as output:
+    with open("output/all_peptides_unknown_td.csv", "w+") as output:
         all_peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
+
+
+def trim_first_last(peptide_file):
+    """Removes first and last character from peptide sequence"""
+    data = pd.read_csv(peptide_file, header='infer', delimiter=',', index_col=0)
+    for i, row in data.iterrows():
+        row['Peptide'] = row['Peptide'][1:-1]
+    with open("output/all_peptides_unknown_gm_trim.csv", "w+") as output:
+        data.to_csv(output, sep=',', mode='w', line_terminator='\n')
