@@ -24,16 +24,16 @@ def create_venn_diagrams(left, right, suffix, left_name, right_name):
     v1 = venn2([set_left, set_right], set_labels=(left_name, right_name), ax=axes[0])
     for text in v1.set_labels:
         text.set_color('w')
-    v1.get_label_by_id('10').set_color('w')
-    v1.get_label_by_id('01').set_color('w')
-    v1.get_label_by_id('11').set_color('w')
-    v1.get_patch_by_id('10').set_color('#3AFFCE')
+    for text in v1.subset_labels:
+        text.set_color('w')
+        text.set_fontsize(12)
+    v1.get_patch_by_id('10').set_color('#FFD54D')
     v1.get_patch_by_id('10').set_edgecolor('none')
     v1.get_patch_by_id('10').set_alpha(0.8)
-    v1.get_patch_by_id('01').set_color('#EADB31')
+    v1.get_patch_by_id('01').set_color('#DF3A42')
     v1.get_patch_by_id('01').set_edgecolor('none')
     v1.get_patch_by_id('01').set_alpha(0.8)
-    v1.get_patch_by_id('11').set_color('#85CA00')
+    v1.get_patch_by_id('11').set_color('#F47200')
     v1.get_patch_by_id('11').set_edgecolor('none')
     v1.get_patch_by_id('11').set_alpha(0.8)
 
@@ -42,16 +42,16 @@ def create_venn_diagrams(left, right, suffix, left_name, right_name):
                subset_label_formatter=lambda x: f"{(x/total_v2):.2%}")
     for text in v2.set_labels:
         text.set_color('w')
-    v2.get_label_by_id('10').set_color('w')
-    v2.get_label_by_id('01').set_color('w')
-    v2.get_label_by_id('11').set_color('w')
-    v2.get_patch_by_id('10').set_color('#239C7E')
+    for text in v2.subset_labels:
+        text.set_color('w')
+        text.set_fontsize(12)
+    v2.get_patch_by_id('10').set_color('#FFD54D')
     v2.get_patch_by_id('10').set_edgecolor('none')
     v2.get_patch_by_id('10').set_alpha(0.8)
-    v2.get_patch_by_id('01').set_color('#D5A300')
+    v2.get_patch_by_id('01').set_color('#DF3A42')
     v2.get_patch_by_id('01').set_edgecolor('none')
     v2.get_patch_by_id('01').set_alpha(0.8)
-    v2.get_patch_by_id('11').set_color('#77B700')
+    v2.get_patch_by_id('11').set_color('#F47200')
     v2.get_patch_by_id('11').set_edgecolor('none')
     v2.get_patch_by_id('11').set_alpha(0.8)
 
@@ -92,7 +92,7 @@ def main(argv):
     except FileNotFoundError as e:
         print(__doc__)
         print("Please provide valid files")
-
+        print(e)
         sys.exit(2)
 
 
