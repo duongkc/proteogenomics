@@ -17,25 +17,6 @@ import numpy as np
 import csv_dataframe
 
 
-def join_dataframes(data):
-    joined_dataframe = pd.DataFrame()
-    with open(data, "r") as file_list:
-        for file in file_list:
-            csv_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=True)
-            joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)
-    return joined_dataframe
-
-
-def create_peptide_list(left_file, right_file):
-    """Creates a list of all peptides as a DataFrame column"""
-    joined_left = join_dataframes(left_file)
-    joined_right = join_dataframes(right_file)
-    all_peptides = joined_left.append(joined_right, ignore_index=True) \
-        .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
-    with open("output/all_peptides_gm.csv", "w+") as output:
-        all_peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
-
-
 def count_peptide_frequency(peptide_data, column_name):
     count = pd.DataFrame(peptide_data['Peptide'].value_counts().reset_index())
     count.columns = ['Peptide', column_name]
