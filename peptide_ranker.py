@@ -13,6 +13,7 @@ import sys
 import pandas as pd
 import scipy.stats as stats
 import numpy as np
+import statsmodels.stats.multitest as sm
 
 import csv_dataframe
 
@@ -31,7 +32,7 @@ def parts_per_million(data):
 
 def create_counter_dataframe(files, group_name, prefix):
     output_file = "output/{}_peptide_frequency_{}.csv".format(prefix, group_name)
-    all_peptides = pd.read_csv("output/all_peptides_gm.csv", header='infer', delimiter=',', index_col=0)
+    all_peptides = pd.read_csv("output/all_peptides_td.csv", header='infer', delimiter=',', index_col=0)
     with open(files, "r") as file_list:
         for num, file in enumerate(file_list):
             file_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
@@ -62,12 +63,22 @@ def mann_whitney_u_test(left_data, right_data, prefix):
     peptides = peptides.sort_values(by=['p-value'], ascending=True)
     with open("output/{}_mann_peptides.csv".format(prefix), "w+") as output:
         peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
+    return peptides
 
 
 def wilcoxon_test(merged_data):
     w_statistic, p_value = stats.wilcoxon(merged_data.left_count, merged_data.right_count, alternative='two-sided')
     print('W-Statistic: ', w_statistic)
     print('p-value: ', p_value)
+
+
+def multiple_test_correction(peptide_data, prefix):
+    p_values = peptide_data['p-value'].tolist()
+    fdr_correction = sm.multipletests(p_values, alpha=0.05, method='fdr_bh', is_sorted=True)
+    # print(fdr_correction[1])
+    peptide_data['p_adjusted'] = fdr_correction[1]
+    with open("output/{}_benj_peptides.csv".format(prefix), "w+") as output:
+        peptide_data.to_csv(output, sep=',', mode='w', line_terminator='\n')
 
 
 def main(argv):
@@ -95,15 +106,9 @@ def main(argv):
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         left_data = create_counter_dataframe(args.left, args.left_name, args.prefix)
         right_data = create_counter_dataframe(args.right, args.right_name, args.prefix)
-        mann_whitney_u_test(left_data, right_data, args.prefix)
-        # if args.batch:
-        #     left_data = join_dataframes(args.left)
-        #     right_data = join_dataframes(args.right)
-        #     merged_data = create_counter_dataframe(left_data, right_data, args.prefix)
-        #     if args.wilcoxon:
-        #         wilcoxon_test(merged_data)
-        #     else:
-        #         mann_whitney_u_test(merged_data)
+        tested_peptides = mann_whitney_u_test(left_data, right_data, args.prefix)
+        multiple_test_correction(tested_peptides, args.prefix)
+
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
         print(__doc__)
