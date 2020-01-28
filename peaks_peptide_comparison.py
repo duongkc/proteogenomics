@@ -28,6 +28,11 @@ def find_distinct_peptides(left_data, right_data, prefix, left_name, right_name)
         right_merged[['Peptide']] \
             .to_csv(distinct_right, sep=',', mode='w', index=False, header=['Peptide'],
                     line_terminator='\n')
+    with open("output/comparison_output/{}_common_peps.csv".format(prefix), "w+") as commons:
+        common_peps = pandas.merge(left_data, right_data, on='Peptide', how='outer', indicator=True) \
+            .query("_merge == 'both'")
+        common_peps[['Peptide']]\
+            .to_csv(commons, sep=',', mode='w', index=False, header=['Peptide'], line_terminator='\n')
 
 
 def main(argv):
