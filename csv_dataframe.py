@@ -42,7 +42,7 @@ def create_peptide_list(left_file, right_file):
     all_peptides = joined_left.append(joined_right, ignore_index=True) \
         .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
     with open("output/all_peptides_unknown_td.csv", "w+") as output:
-        all_peptides.to_csv(output, sep=',', mode='w', line_terminator='\n')
+        all_peptides.to_csv(output, sep=',', index=False, mode='w', line_terminator='\n')
 
 
 def trim_first_last(peptide_file):
@@ -51,4 +51,4 @@ def trim_first_last(peptide_file):
     for i, row in data.iterrows():
         row['Peptide'] = row['Peptide'][1:-1]
     with open("output/all_peptides_unknown_gm_trim.csv", "w+") as output:
-        data.to_csv(output, sep=',', mode='w', line_terminator='\n')
+        data.to_csv(output, sep=',', mode='w', index=False, line_terminator='\n')
