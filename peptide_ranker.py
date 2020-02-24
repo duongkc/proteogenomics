@@ -74,6 +74,7 @@ def wilcoxon_test(merged_data):
 
 def multiple_test_correction(peptide_data, prefix):
     p_values = peptide_data['p-value'].tolist()
+    # p_values = list(filter(None, p_values))
     fdr_correction = sm.multipletests(p_values, alpha=0.05, method='fdr_bh', is_sorted=True)
     # print(fdr_correction[1])
     peptide_data['p_adjusted'] = fdr_correction[1]
