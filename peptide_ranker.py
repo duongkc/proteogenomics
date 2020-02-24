@@ -107,8 +107,8 @@ def main(argv):
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         left_data = create_counter_dataframe(args.left, args.left_name, args.prefix)
         right_data = create_counter_dataframe(args.right, args.right_name, args.prefix)
-        tested_peptides = mann_whitney_u_test(left_data, right_data, args.prefix)
-        multiple_test_correction(tested_peptides, args.prefix)
+        # tested_peptides = mann_whitney_u_test(left_data, right_data, args.prefix)
+        # multiple_test_correction(tested_peptides, args.prefix)
 
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
