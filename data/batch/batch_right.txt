@@ -1,2 +1,0 @@
-data/unknown_peps/ensembl_gm_02_unknown_peptides.csv
-data/unknown_peps/ensembl_gm_04_unknown_peptides.csv
