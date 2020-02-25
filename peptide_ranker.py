@@ -36,15 +36,15 @@ def create_counter_dataframe(files, group_name, prefix):
     with open(files, "r") as file_list:
         for num, file in enumerate(file_list):
             file_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
-            counter_column = count_peptide_frequency(file_data, "{}{}".format(group_name[0].capitalize(), num + 1))
+            counter_column = count_peptide_frequency(file_data, "{}{}".format(group_name, num + 1))
             all_peptides = pd.merge(all_peptides, counter_column, on='Peptide', how='outer')
 
     all_peptides = all_peptides.fillna(0, downcast='infer')
-    for column in all_peptides.columns[1:]:
-        all_peptides[column] = parts_per_million(all_peptides[column])
-    # merged['abs'] = np.abs(merged['left_count'] - merged['right_count'])
-    # merged = merged.sort_values(by=['abs'], ascending=False)
-    #
+
+    # Normalizing to ppm
+    # for column in all_peptides.columns[1:]:
+    #     all_peptides[column] = parts_per_million(all_peptides[column])
+
     with open(output_file, "w+") as output_file:
         all_peptides.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
     return all_peptides
