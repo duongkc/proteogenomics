@@ -5,11 +5,9 @@ To be used to create a swissprot database with only Homo sapiens sequences
 """
 import argparse
 import datetime
-import multiprocessing as mp
 import os
 import sys
 
-import numpy as np
 from Bio import SeqIO
 
 

@@ -7,12 +7,10 @@ If specified, a Wilcoxon signed-rank test will be performed instead.
 """
 import argparse
 import datetime
-import os
 import sys
 
 import pandas as pd
 import scipy.stats as stats
-import numpy as np
 import statsmodels.stats.multitest as sm
 
 import csv_dataframe
@@ -41,7 +39,7 @@ def create_counter_dataframe(files, group_name, prefix):
 
     all_peptides = all_peptides.fillna(0, downcast='infer')
 
-    # Normalizing to ppm
+    # # Normalizing to ppm
     # for column in all_peptides.columns[1:]:
     #     all_peptides[column] = parts_per_million(all_peptides[column])
 
@@ -66,17 +64,10 @@ def mann_whitney_u_test(left_data, right_data, prefix):
     return peptides
 
 
-def wilcoxon_test(merged_data):
-    w_statistic, p_value = stats.wilcoxon(merged_data.left_count, merged_data.right_count, alternative='two-sided')
-    print('W-Statistic: ', w_statistic)
-    print('p-value: ', p_value)
-
-
 def multiple_test_correction(peptide_data, prefix):
     p_values = peptide_data['p-value'].tolist()
     # p_values = list(filter(None, p_values))
     fdr_correction = sm.multipletests(p_values, alpha=0.05, method='fdr_bh', is_sorted=True)
-    # print(fdr_correction[1])
     peptide_data['p_adjusted'] = fdr_correction[1]
     with open("output/{}_benj_peptides.csv".format(prefix), "w+") as output:
         peptide_data.to_csv(output, sep=',', mode='w', line_terminator='\n')
