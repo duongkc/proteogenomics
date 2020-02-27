@@ -2,7 +2,7 @@
 """
 A python module that counts and compares peptide frequency between two groups. Results can be found in a separate
 output file.
-Contains a Mann-Whitney U test 
+Contains a Mann-Whitney U test
 """
 import argparse
 import datetime
@@ -27,9 +27,26 @@ def parts_per_million(data):
     return ppm
 
 
-def create_counter_dataframe(files, group_name, prefix):
+def join_dataframes(data):
+    joined_dataframe = pd.DataFrame()
+    with open(data, "r") as file_list:
+        for file in file_list:
+            csv_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=True)
+            joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)
+    return joined_dataframe
+
+
+def create_peptide_list(left_file, right_file):
+    """Creates a list of all peptides as a DataFrame column"""
+    joined_left = join_dataframes(left_file)
+    joined_right = join_dataframes(right_file)
+    all_peptides = joined_left.append(joined_right, ignore_index=True) \
+        .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
+    return all_peptides
+
+
+def create_counter_dataframe(files, group_name, prefix, all_peptides):
     output_file = "output/{}_peptide_frequency_{}.csv".format(prefix, group_name)
-    all_peptides = pd.read_csv("output/all_peptides_td.csv", header='infer', delimiter=',', index_col=0)
     with open(files, "r") as file_list:
         for num, file in enumerate(file_list):
             file_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
@@ -38,7 +55,7 @@ def create_counter_dataframe(files, group_name, prefix):
 
     all_peptides = all_peptides.fillna(0, downcast='infer')
 
-    # # Normalizing to ppm
+    # # Normalising to ppm
     # for column in all_peptides.columns[1:]:
     #     all_peptides[column] = parts_per_million(all_peptides[column])
 
@@ -87,15 +104,13 @@ def main(argv):
                         help="Name the left sample")
     parser.add_argument('--right_name', action='store', dest="right_name", default="right",
                         help="Name the right sample")
-    parser.add_argument('-w', '--wilcoxon', action='store_true', dest="wilcoxon",
-                        help="Will perform a Wilcoxon signed-rank test instead of a Mann-Whitney U test if this"
-                             "argument is provided.")
     args = parser.parse_args()
 
     try:
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-        left_data = create_counter_dataframe(args.left, args.left_name, args.prefix)
-        right_data = create_counter_dataframe(args.right, args.right_name, args.prefix)
+        peptides = create_peptide_list(args.left, args.right)
+        create_counter_dataframe(args.left, args.left_name, args.prefix, peptides)
+        create_counter_dataframe(args.right, args.right_name, args.prefix, peptides)
 
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:

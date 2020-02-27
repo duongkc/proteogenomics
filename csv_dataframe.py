@@ -26,25 +26,6 @@ def extract_csv_data(input_file, drop_dupes):
     return csv_data
 
 
-def join_dataframes(data):
-    joined_dataframe = pd.DataFrame()
-    with open(data, "r") as file_list:
-        for file in file_list:
-            csv_data = extract_csv_data(file.strip(), drop_dupes=True)
-            joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)
-    return joined_dataframe
-
-
-def create_peptide_list(left_file, right_file):
-    """Creates a list of all peptides as a DataFrame column"""
-    joined_left = join_dataframes(left_file)
-    joined_right = join_dataframes(right_file)
-    all_peptides = joined_left.append(joined_right, ignore_index=True) \
-        .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
-    with open("output/all_peptides_unknown_td.csv", "w+") as output:
-        all_peptides.to_csv(output, sep=',', index=False, mode='w', line_terminator='\n')
-
-
 def trim_first_last(peptide_file):
     """Removes first and last character from peptide sequence"""
     data = pd.read_csv(peptide_file, header='infer', delimiter=',', index_col=0)
