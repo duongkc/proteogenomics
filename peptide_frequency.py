@@ -2,8 +2,7 @@
 """
 A python module that counts and compares peptide frequency between two groups. Results can be found in a separate
 output file.
-A Mann-Whitney U test will also be performed with these results, with the results shown in the terminal.
-If specified, a Wilcoxon signed-rank test will be performed instead.
+Contains a Mann-Whitney U test 
 """
 import argparse
 import datetime
@@ -66,7 +65,6 @@ def mann_whitney_u_test(left_data, right_data, prefix):
 
 def multiple_test_correction(peptide_data, prefix):
     p_values = peptide_data['p-value'].tolist()
-    # p_values = list(filter(None, p_values))
     fdr_correction = sm.multipletests(p_values, alpha=0.05, method='fdr_bh', is_sorted=True)
     peptide_data['p_adjusted'] = fdr_correction[1]
     with open("output/{}_benj_peptides.csv".format(prefix), "w+") as output:
@@ -98,8 +96,6 @@ def main(argv):
         print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         left_data = create_counter_dataframe(args.left, args.left_name, args.prefix)
         right_data = create_counter_dataframe(args.right, args.right_name, args.prefix)
-        # tested_peptides = mann_whitney_u_test(left_data, right_data, args.prefix)
-        # multiple_test_correction(tested_peptides, args.prefix)
 
         print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
