@@ -111,12 +111,12 @@ def main(argv):
     args = parser.parse_args()
 
     try:
-        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         peptides = create_peptide_list(args.left, args.right)
         create_counter_dataframe(args.left, args.left_name, args.prefix, peptides)
         create_counter_dataframe(args.right, args.right_name, args.prefix, peptides)
 
-        print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
         print(__doc__)
         print("Please provide valid files:")

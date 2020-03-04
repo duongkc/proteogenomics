@@ -63,9 +63,10 @@ def main(argv):
 
         find_distinct_peptides(left_data, right_data, args.prefix, args.left_name, args.right_name)
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         print(__doc__)
-        print("Please provide valid files")
+        print("Please provide valid files:")
+        print(e)
         sys.exit(2)
 
 

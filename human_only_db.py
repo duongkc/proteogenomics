@@ -28,8 +28,15 @@ def main(argv):
     parser.add_argument('-d', '--database', action='store', dest="database", required=True,
                         help="Specify the directory of the protein database file")
     args = parser.parse_args()
-
-    search_db(args.database)
+    try:
+        print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        search_db(args.database)
+        print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+    except FileNotFoundError as e:
+        print(__doc__)
+        print("Please provide valid files:")
+        print(e)
+        sys.exit(2)
 
 
 if __name__ == '__main__':

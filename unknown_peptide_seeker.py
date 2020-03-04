@@ -84,9 +84,10 @@ def main(argv):
         merged_flags = merge_flags(results)
         write_unknown_peptide_data(csv_data, merged_flags, args.prefix)
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         print(__doc__)
-        print("Please provide valid files")
+        print("Please provide valid files:")
+        print(e)
         sys.exit(2)
 
 

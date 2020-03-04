@@ -106,12 +106,14 @@ def main(argv):
         os.remove("output/Trinity.fasta.genemark.cds")
 
     try:
-        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         parse_genemark(args.genemark, args.transcript)
-        print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-    except FileNotFoundError:
+        print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+    except FileNotFoundError as e:
         print(__doc__)
-        print("Please provide valid files")
+        print("Please provide valid files:")
+        print(e)
+        sys.exit(2)
 
 
 if __name__ == '__main__':

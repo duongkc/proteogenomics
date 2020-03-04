@@ -23,6 +23,7 @@ def create_venn_diagrams(left, right, suffix, left_name, right_name):
     fig, axes = plt.subplots(nrows=1, ncols=2)
     v1 = venn2([set_left, set_right], set_labels=(left_name, right_name), ax=axes[0])
 
+    # In absolute numbers
     for text in v1.subset_labels:
         text.set_fontsize(16)
     v1.get_patch_by_id('10').set_color('#33C4A4')
@@ -39,6 +40,7 @@ def create_venn_diagrams(left, right, suffix, left_name, right_name):
     v2 = venn2([set_left, set_right], set_labels=(left_name, right_name), ax=axes[1],
                subset_label_formatter=lambda x: f"{(x/total_v2):.1%}")
 
+    # In percentages
     for text in v2.subset_labels:
         text.set_fontsize(16)
     v2.get_patch_by_id('10').set_color('#33C4A4')
