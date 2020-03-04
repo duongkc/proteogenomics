@@ -57,12 +57,12 @@ def main(argv):
         pass
 
     try:
-        print("started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
         left_data = csv_dataframe.extract_csv_data(args.left, drop_dupes=True)
         right_data = csv_dataframe.extract_csv_data(args.right, drop_dupes=True)
 
         find_distinct_peptides(left_data, right_data, args.prefix, args.left_name, args.right_name)
-        print("finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
+        print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError:
         print(__doc__)
         print("Please provide valid files")

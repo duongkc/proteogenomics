@@ -16,18 +16,21 @@ import csv_dataframe
 
 
 def count_peptide_frequency(peptide_data, column_name):
+    """Counts amount of PSMs per peptide"""
     count = pd.DataFrame(peptide_data['Peptide'].value_counts().reset_index())
     count.columns = ['Peptide', column_name]
     return count
 
 
 def parts_per_million(data):
+    """Converts dataframe values to parts per million across the columns"""
     data_sum = data.sum()
     ppm = data / data_sum * 1000000
     return ppm
 
 
 def join_dataframes(data):
+    """Takes list of CSV files and concatenates them into 1 big dataframe"""
     joined_dataframe = pd.DataFrame()
     with open(data, "r") as file_list:
         for file in file_list:
@@ -46,6 +49,7 @@ def create_peptide_list(left_file, right_file):
 
 
 def create_counter_dataframe(files, group_name, prefix, all_peptides):
+    """Creates full dataframe with peptide frequency in each sample"""
     output_file = "output/{}_peptide_frequency_{}.csv".format(prefix, group_name)
     with open(files, "r") as file_list:
         for num, file in enumerate(file_list):

@@ -52,7 +52,7 @@ def reverse_complement(sequence):
 
 def write_orfs(gene_id, sequence, start, stop, strand):
     """Writes ORFs to new file in current directory"""
-    with open("../output/Trinity.fasta.genemark.cds", "a+") as new_file:
+    with open("output/Trinity.fasta.genemark.cds", "a+") as new_file:
         new_file.write(">" + gene_id + ":" + str(start+1) + "-" + str(stop) + "(" + strand + ")\n")
         new_file.write(sequence + "\n")
 
