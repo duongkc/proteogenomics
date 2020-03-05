@@ -52,7 +52,11 @@ def main(argv):
     args = parser.parse_args()
 
     try:
-        os.makedirs("output/comparison_output")
+        os.makedirs("output/{}".format(args.prefix))
+    except FileExistsError:
+        pass
+    try:
+        os.makedirs("output/{}/comparison_output".format(args.prefix))
     except FileExistsError:
         pass
 

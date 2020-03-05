@@ -50,7 +50,7 @@ def create_peptide_list(left_file, right_file):
 
 def create_counter_dataframe(files, group_name, prefix, all_peptides):
     """Creates full dataframe with peptide frequency in each sample"""
-    output_file = "output/{}_peptide_frequency_{}.csv".format(prefix, group_name)
+    output_file = "output/{}/peptide_count/peptide_frequency_{}.csv".format(prefix, group_name)
     with open(files, "r") as file_list:
         for num, file in enumerate(file_list):
             file_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=False)
@@ -109,6 +109,15 @@ def main(argv):
     parser.add_argument('--right_name', action='store', dest="right_name", default="right",
                         help="Name the right sample")
     args = parser.parse_args()
+
+    try:
+        os.makedirs("output/{}".format(args.prefix))
+    except FileExistsError:
+        pass
+    try:
+        os.makedirs("output/{}/peptide_count".format(args.prefix))
+    except FileExistsError:
+        pass
 
     try:
         print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
