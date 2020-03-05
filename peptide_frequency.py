@@ -6,6 +6,7 @@ Contains a Mann-Whitney U test
 """
 import argparse
 import datetime
+import os
 import sys
 
 import pandas as pd
@@ -64,7 +65,7 @@ def create_counter_dataframe(files, group_name, prefix, all_peptides):
     #     all_peptides[column] = parts_per_million(all_peptides[column])
 
     with open(output_file, "w+") as output_file:
-        all_peptides.to_csv(output_file, sep=',', mode='w', line_terminator='\n')
+        all_peptides.to_csv(output_file, sep=',', mode='w', line_terminator='\n', index=False)
     return all_peptides
 
 
