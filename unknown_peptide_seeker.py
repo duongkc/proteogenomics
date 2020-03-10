@@ -43,9 +43,9 @@ def merge_flags(flags):
     return merged_flag_list
 
 
-def write_unknown_peptide_data(peptide_data, merged_flag_list, prefix):
+def write_unknown_peptide_data(peptide_data, merged_flag_list, prefix, directory):
     """Writes filtered dataframe to a new csv file"""
-    output = "output/unknown_peptides/{}_unknown_peptides.csv".format(prefix)
+    output = "output/{}/unknown_peptides/{}_unknown_peptides.csv".format(directory, prefix)
 
     with open(output, "w") as unknown_pep_file:
         filtered_df = peptide_data[merged_flag_list]
@@ -61,12 +61,15 @@ def main(argv):
                         help="Specify the directory of the protein-peptide.csv file")
     parser.add_argument('-d', '--database', action='store', dest="database", required=True,
                         help="Specify the directory of the protein database file")
+    parser.add_argument('-o', '--outdir', action='store', dest='outdir', default="peptides",
+                        help="Provide an output directory name, i.e. 'output/<NAME>/unknown_peptides/'")
     parser.add_argument('-p', '--prefix', action='store', dest="prefix", default="sample",
-                        help="Provide a prefix for the output file: <prefix>_unknown_peptides.csv")
+                        help="Provide a prefix for the output file: <PREFIX>_unknown_peptides.csv")
+
     args = parser.parse_args()
 
     try:
-        os.makedirs("output/unknown_peptides")
+        os.makedirs("output/{}/unknown_peptides".format(args.outdir))
     except FileExistsError:
         pass
 
@@ -82,7 +85,7 @@ def main(argv):
         pool.join()
 
         merged_flags = merge_flags(results)
-        write_unknown_peptide_data(csv_data, merged_flags, args.prefix)
+        write_unknown_peptide_data(csv_data, merged_flags, args.prefix, args.outdir)
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
         print(__doc__)

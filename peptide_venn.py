@@ -14,7 +14,7 @@ from matplotlib_venn import venn2
 import csv_dataframe
 
 
-def create_venn_diagrams(left, right, suffix, left_name, right_name):
+def create_venn_diagrams(left, right, left_name, right_name, directory):
     """Creates venn diagrams from the unique peptide lists of each file"""
 
     set_left = set(left.Peptide)
@@ -55,10 +55,10 @@ def create_venn_diagrams(left, right, suffix, left_name, right_name):
     v2.get_label_by_id('01').set_y(0.05)
     v2.get_label_by_id('11').set_y(-0.05)
 
-    plt.suptitle('Comparing {} and {} peptide matches \nin {}'.format(left_name, right_name, suffix))
+    plt.suptitle('Comparing {} and {} peptide matches \nin {}'.format(left_name, right_name, directory))
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.tight_layout()
-    plt.savefig('output/{}/comparison_graphs/venn_{}_{}.png'.format(suffix, left_name, right_name), transparent=True)
+    plt.savefig('output/{}/comparison_graphs/venn_{}_{}.png'.format(directory, left_name, right_name), transparent=True)
 
 
 def main(argv):
@@ -69,20 +69,20 @@ def main(argv):
                         help="Specify directory of the first sample .csv", required=True)
     parser.add_argument('-r', '--right', action='store', dest="right",
                         help="Specify directory of the second sample .csv", required=True)
-    parser.add_argument('-p', '--prefix', action='store', dest="prefix", default="peptides",
-                        help="Give the output file a custom name: venn_<prefix>.png")
     parser.add_argument('--left_name', action='store', dest="left_name", default="sample left",
                         help="Name the left sample")
     parser.add_argument('--right_name', action='store', dest="right_name", default="sample right",
                         help="Name the right sample")
+    parser.add_argument('-o', '--outdir', action='store', dest='outdir', default="peptides",
+                        help="Provide an output directory name, i.e. 'output/<NAME>/comparison_graphs/'")
     args = parser.parse_args()
 
     try:
-        os.makedirs("output/{}".format(args.suffix))
+        os.makedirs("output/{}".format(args.outdir))
     except FileExistsError:
         pass
     try:
-        os.makedirs("output/{}/comparison_graphs".format(args.suffix))
+        os.makedirs("output/{}/comparison_graphs".format(args.outdir))
     except FileExistsError:
         pass
 
@@ -91,7 +91,7 @@ def main(argv):
         left_data = csv_dataframe.extract_csv_data(args.left, drop_dupes=True)
         right_data = csv_dataframe.extract_csv_data(args.right, drop_dupes=True)
 
-        create_venn_diagrams(left_data, right_data, args.prefix, args.left_name, args.right_name)
+        create_venn_diagrams(left_data, right_data, args.left_name, args.right_name, args.outdir)
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
     except FileNotFoundError as e:
         print(__doc__)
