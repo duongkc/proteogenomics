@@ -30,20 +30,10 @@ def parts_per_million(data):
     return ppm
 
 
-def join_dataframes(data):
-    """Takes list of CSV files and concatenates them into 1 big dataframe"""
-    joined_dataframe = pd.DataFrame()
-    with open(data, "r") as file_list:
-        for file in file_list:
-            csv_data = csv_dataframe.extract_csv_data(file.strip(), drop_dupes=True)
-            joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)
-    return joined_dataframe
-
-
 def create_peptide_list(left_file, right_file):
     """Creates a list of all peptides as a DataFrame column"""
-    joined_left = join_dataframes(left_file)
-    joined_right = join_dataframes(right_file)
+    joined_left = csv_dataframe.join_dataframes(left_file)
+    joined_right = csv_dataframe.join_dataframes(right_file)
     all_peptides = joined_left.append(joined_right, ignore_index=True) \
         .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
     return all_peptides
@@ -98,11 +88,11 @@ def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument('-l', '--left', action='store', dest="left",
-                        help="Specify the .txt file containing the first group of peptide .csv file paths"
-                             "containing paths to them", required=True)
+                        help="Specify the .txt file containing the first group of peptide .csv file paths",
+                        required=True)
     parser.add_argument('-r', '--right', action='store', dest="right",
-                        help="Specify the .txt file containing the second group of peptide .csv file paths"
-                             "containing paths to them", required=True)
+                        help="Specify the .txt file containing the second group of peptide .csv file paths",
+                        required=True)
     parser.add_argument('--left_name', action='store', dest="left_name", default="left",
                         help="Name the left sample")
     parser.add_argument('--right_name', action='store', dest="right_name", default="right",

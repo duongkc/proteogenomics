@@ -66,9 +66,11 @@ def main(argv):
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-l', '--left', action='store', dest="left",
-                        help="Specify directory of the first sample .csv", required=True)
+                        help="Specify the .txt file containing the first group of peptide .csv file paths",
+                        required=True)
     parser.add_argument('-r', '--right', action='store', dest="right",
-                        help="Specify directory of the second sample .csv", required=True)
+                        help="Specify the .txt file containing the second group of peptide .csv file paths",
+                        required=True)
     parser.add_argument('--left_name', action='store', dest="left_name", default="sample left",
                         help="Name the left sample")
     parser.add_argument('--right_name', action='store', dest="right_name", default="sample right",
@@ -88,8 +90,8 @@ def main(argv):
 
     try:
         print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-        left_data = csv_dataframe.extract_csv_data(args.left, drop_dupes=True)
-        right_data = csv_dataframe.extract_csv_data(args.right, drop_dupes=True)
+        left_data = csv_dataframe.join_dataframes(args.left)
+        right_data = csv_dataframe.join_dataframes(args.right)
 
         create_venn_diagrams(left_data, right_data, args.left_name, args.right_name, args.outdir)
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))

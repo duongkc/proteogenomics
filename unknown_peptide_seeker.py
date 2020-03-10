@@ -58,7 +58,7 @@ def main(argv):
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-c', '--csv', action='store', dest="csv", required=True,
-                        help="Specify the directory of the protein-peptide.csv file")
+                        help="Specify the .txt file containing the peptide .csv file paths")
     parser.add_argument('-d', '--database', action='store', dest="database", required=True,
                         help="Specify the directory of the protein database file")
     parser.add_argument('-o', '--outdir', action='store', dest='outdir', default="peptides",
@@ -76,7 +76,7 @@ def main(argv):
     try:
         print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
 
-        csv_data = csv_dataframe.extract_csv_data(args.csv, drop_dupes=True)
+        csv_data = csv_dataframe.join_dataframes(args.csv)
 
         cpu = os.cpu_count()
         pool = mp.Pool(processes=cpu)
