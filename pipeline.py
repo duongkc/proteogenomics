@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 """A simple pipeline to filter peptide lists and preps data  for future use"""
 import argparse
+import datetime
 import multiprocessing as mp
 import os
 import sys
-import datetime
 
 import csv_dataframe
 import peaks_peptide_comparison
 import peptide_frequency
-import unknown_peptide_seeker
 import peptide_venn
+import unknown_peptide_seeker
 
 
 def make_directories(dir_name):
