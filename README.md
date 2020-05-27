@@ -3,7 +3,7 @@
 A collection of python modules used to analyse and filter proteomic cancer data.  
 They filter PEAKS output files until the peptides of interest remain.
 The peptide lists get compared to one another and can be visualised in venn diagrams.
-The resulting files are utilized in the other [repository](https://bitbucket.org/kcduong/proteogenomics_stats/)
+The resulting files are utilized in the other [repository](https://bitbucket.org/kcduong/proteogenomics_stats/).
 
 ## Getting Started
 
