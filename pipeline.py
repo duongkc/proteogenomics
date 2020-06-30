@@ -104,7 +104,7 @@ def create_graph(left, right, left_name, right_name, directory):
 def create_sub_graph(directory, data_name):
     left = "output/{}/comparison_output/all_distinct_{}.csv".format(directory, data_name)
     left_data = csv_dataframe.extract_csv_data(left, drop_dupes=True)
-    right = "output/{}/comparison_output/{}_distinct_distinct.csv"
+    right = "output/{}/comparison_output/{}_distinct_distinct.csv".format(directory, data_name)
     right_data = csv_dataframe.extract_csv_data(right, drop_dupes=True)
     left_name = "distinct {}".format(data_name)
     right_name = "distinct database {}".format(data_name)
