@@ -65,6 +65,8 @@ def main(argv):
                         help="Provide an output directory name, i.e. 'output/<NAME>/unknown_peptides/'")
     parser.add_argument('-p', '--prefix', action='store', dest="prefix", default="sample",
                         help="Provide a prefix for the output file: <PREFIX>_unknown_peptides.csv")
+    parser.add_argument('--cpu', action='store', dest="cpu", type=int,
+                        help="Provide number of CPUs to be used in this process")
 
     args = parser.parse_args()
 
@@ -78,7 +80,11 @@ def main(argv):
 
         csv_data = csv_dataframe.join_dataframes(args.csv)
 
-        cpu = os.cpu_count()
+        if args.cpu is not None:
+            cpu = args.cpu
+        else:
+            cpu = os.cpu_count()
+
         pool = mp.Pool(processes=cpu)
         results = pool.map(search_peptide_db, [(csv_data, args.database, cpu, i) for i in range(1, cpu + 1)])
         pool.close()
