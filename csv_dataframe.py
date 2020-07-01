@@ -26,14 +26,19 @@ def extract_csv_data(input_file, drop_dupes):
     return csv_data
 
 
-def join_dataframes(data):
+def join_dataframes(data, batch=True):
     """Takes list of CSV files and concatenates them into 1 big dataframe"""
     joined_dataframe = pd.DataFrame()
-    with open(data, "r") as file_list:
-        for file in file_list:
-            csv_data = extract_csv_data(file.strip(), drop_dupes=True)
-            joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)\
-                .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
+    if batch:
+        with open(data, "r") as file_list:
+            for file in file_list:
+                csv_data = extract_csv_data(file.strip(), drop_dupes=True)
+                joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True)\
+                    .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
+    else:
+        csv_data = extract_csv_data(data.strip(), drop_dupes=True)
+        joined_dataframe = joined_dataframe.append(csv_data[['Peptide']], ignore_index=True) \
+            .drop_duplicates(subset=['Peptide'], keep='first').reset_index(drop=True)
     return joined_dataframe
 
 
