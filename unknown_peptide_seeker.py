@@ -45,7 +45,7 @@ def merge_flags(flags):
 
 def write_unknown_peptide_data(peptide_data, merged_flag_list, prefix, directory):
     """Writes filtered dataframe to a new csv file"""
-    output = "output/{}/unknown_peptides/{}_unknown_peptides.csv".format(directory, prefix)
+    output = "output/{}/unknown_peptides/{}_unknown.csv".format(directory, prefix)
 
     with open(output, "w") as unknown_pep_file:
         filtered_df = peptide_data[merged_flag_list]
