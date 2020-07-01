@@ -66,8 +66,8 @@ def main(argv):
 
     try:
         print("Started at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
-        left_data = csv_dataframe.join_dataframes(args.left, batch=False)
-        right_data = csv_dataframe.join_dataframes(args.right, batch=False)
+        left_data = csv_dataframe.join_dataframes(args.left)
+        right_data = csv_dataframe.join_dataframes(args.right)
 
         find_distinct_peptides(left_data, right_data, args.prefix, args.left_name, args.right_name, args.outdir)
         print("Finished at: " + datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))
