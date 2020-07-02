@@ -79,7 +79,7 @@ def find_unknowns(dataframe, database, name, directory):
 def compare_distinct_unknown(directory, data_name):
     left = "output/{}/comparison_output/all_distinct_{}.csv".format(directory, data_name)
     left_data = csv_dataframe.extract_csv_data(left, drop_dupes=True)
-    right = "output/{}/unknown_peptides/{}_unknown_peptides.csv".format(directory, data_name)
+    right = "output/{}/unknown_peptides/{}_unknown.csv".format(directory, data_name)
     right_data = csv_dataframe.extract_csv_data(right, drop_dupes=True)
     prefix = data_name
     left_name = "distinct"
